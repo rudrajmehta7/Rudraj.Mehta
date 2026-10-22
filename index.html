@@ -140,6 +140,21 @@ a{color:inherit}
 .about ul{max-width:62ch;padding-left:20px}
 .about li{margin-bottom:8px}
 
+
+.earn-list{display:grid;gap:0}
+.earn .meta{display:flex;flex-wrap:wrap;gap:4px 12px}
+.earn{padding:20px 0;border-bottom:1px solid var(--rule);max-width:70ch}
+.earn h3{margin:6px 0 4px;font-family:var(--display);font-stretch:80%;font-weight:700;font-size:clamp(22px,3.4vw,28px);line-height:1.1}
+.earn .tk{color:var(--accent);font-size:.7em;letter-spacing:.06em;margin-right:6px}
+.earn .ehead{margin:0 0 10px;color:var(--muted)}
+.earn ul{padding-left:20px;margin:10px 0 12px}
+.earn li{margin-bottom:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0 22px;margin:12px 0;border-top:1px solid var(--ink)}
+.stats div{padding:8px 0;border-bottom:1px solid var(--rule);min-width:0}
+.stats dt{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.stats dd{margin:2px 0 0;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px}
+.cal{padding:12px 0;border-bottom:1px solid var(--rule);max-width:70ch}
+.cal p{margin:4px 0 0;font-size:15.5px}
 footer{margin-top:56px;padding-top:14px;border-top:2px solid var(--ink);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px}
 footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1.5}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
@@ -156,9 +171,10 @@ footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1
     </div>
     <nav class="nav" id="nav" aria-label="Sections">
       <a href="#home" data-route="home">Today</a>
+      <a href="#markets" data-route="markets">Markets</a>
+      <a href="#ai" data-route="ai">AI stocks</a>
+      <a href="#earnings" data-route="earnings">Earnings</a>
       <a href="#notes" data-route="notes">Notes</a>
-      <a href="#views" data-route="views">Views</a>
-      <a href="#log" data-route="log">Log</a>
       <a href="#about" data-route="about">About</a>
       <button class="theme" id="theme" type="button" aria-label="Switch light and dark theme">Theme</button>
     </nav>
@@ -175,124 +191,178 @@ footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1
 <script>
 /* ======================================================================
    EDIT HERE. Everything on the site comes from this SITE object.
-   Daily routine: update snapshot.asOf and the levels, then add one note
-   at the top of the notes list. Set sample to false when it is all yours.
+   Daily routine: update snapshot, ai, earnings and add a note at the top
+   of notes. Figures below are from 21 Oct 2026 and carry their sources.
    ====================================================================== */
 const SITE = {
   name: "Rudraj Research",
-  sample: true,
-  disclaimer: "For educational and informational purposes only. Not investment advice. Views are my own.",
+  sample: false,
+  disclaimer: "For educational and informational purposes only. Not investment advice. Views are my own. Figures come from the linked public sources and may differ slightly between them.",
 
   snapshot: {
-    asOf: "7 Oct 2026 close",
-    rail: ["S&P 500", "US 10-year yield", "Dollar index", "Gold", "Brent crude", "Bitcoin"],
+    asOf: "21 Oct 2026 close",
+    caveat: "Index point levels for the S&P 500 and Nasdaq were not consistent across sources, so only the percentage moves are shown. Gold and oil are page snapshots, not settlements.",
+    rail: ["S&P 500", "Dow Jones", "Nasdaq Composite", "US 10-year yield", "Gold", "Brent crude"],
     groups: [
       { name: "Equities", rows: [
-        { n: "S&P 500", v: "7,803", c: -0.30, note: "Fell from a record high" } ]},
+        { n: "S&P 500", v: "–", c: 0.5, note: "Third straight gain. Sources give +0.46% to +0.58%" },
+        { n: "Dow Jones", v: "52,856", c: 0.69 },
+        { n: "Nasdaq Composite", v: "–", c: 0.94, note: "Led by chips and SpaceX" },
+        { n: "VIX", v: "16.68", c: -3.64 } ]},
       { name: "Rates", rows: [
-        { n: "US 10-year yield", v: "5.28%", note: "Touched 5.36%, highest since 2002" },
-        { n: "US 30-year yield", v: "5.70%", note: "Topped 5.70% intraday" } ]},
-      { name: "FX", rows: [
-        { n: "Dollar index", v: "102.3", c: 0.42, note: "Firmer against six of seven majors" },
-        { n: "USD/JPY", v: "158.04" } ]},
+        { n: "US 10-year yield", v: "5.15%", note: "Up 3bp on the day" },
+        { n: "US 5-year yield", v: "4.95%" },
+        { n: "US 2-year yield", v: "4.81%" } ]},
       { name: "Commodities", rows: [
-        { n: "Gold", v: "$4,112", c: -1.30, note: "Low near $4,072" },
-        { n: "WTI crude", v: "$90", c: -1.40, note: "High near $92.70" },
-        { n: "Brent crude", v: "$102", note: "Held above $102 on Hormuz attacks" } ]},
+        { n: "Gold", v: "$4,118", c: -0.76, note: "Down 5.2% on a year ago. Fed decision due next week" },
+        { n: "WTI crude (Dec)", v: "$98.44", c: 1.33 },
+        { n: "Brent crude", v: "~$110.7", note: "8am ET. Spiked above $110 after a drone strike on a Saudi Aramco field" } ]},
       { name: "Crypto", rows: [
-        { n: "Bitcoin", v: "$83,400", c: -2.60, note: "Leveraged longs liquidated" } ]}
-    ]
+        { n: "Bitcoin", v: "$82,613", c: -0.03 } ]}
+    ],
+    sources: [
+      { t: "Yahoo Finance: stock market today, 21 Oct 2026", u: "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html" },
+      { t: "24/7 Wall St: closing bell, 21 Oct 2026", u: "https://247wallst.com/cards/tech-is-still-carrying-this-market-the-nasdaq-s-0-94-gain-gspc-market-bell-01m5g0zt5dgcctbwmxyzhm7h02" },
+      { t: "Yahoo Finance: gold price today, 21 Oct 2026", u: "https://finance.yahoo.com/personal-finance/investing/article/gold-price-today-wednesday-october-21-2026-gold-prices-down-52-yoy-one-week-ahead-of-the-feds-rate-decision-105025200.html" },
+      { t: "Yahoo Finance UK: price of oil, 21 Oct 2026", u: "https://uk.finance.yahoo.com/news/current-price-oil-october-21-120010312.html" },
+      { t: "CNT Trading: daily market, 21 Oct 2026", u: "https://cnttrading.substack.com/p/daily-market-2026-10-21" } ]
   },
 
-  /* Stocks on watch. Leave v and c as null until you add the day's levels. */
-  watchlist: [
-    { t: "NVDA", n: "Nvidia", v: null, c: null, note: "Add the last price and one line on why it is on the list." },
-    { t: "ASML", n: "ASML Holding", v: null, c: null, note: "Example row." },
-    { t: "RELIANCE", n: "Reliance Industries", v: null, c: null, note: "Example row." }
+  /* AI and mega-cap tech. p = price, c = day % move, ah = after-hours move. */
+  ai: {
+    asOf: "21 Oct 2026",
+    summary: "Chipmakers led the rebound: the chip index rose 2.0%. Nasdaq 100 futures then fell about 1.5% overnight as investors weighed Meta's spending against its cash flow and Lam Research's guidance.",
+    rows: [
+      { t: "SPCX", n: "SpaceX", p: "$159.31", c: 7.79, note: "Rallied on AI-led results" },
+      { t: "TSLA", n: "Tesla", p: "$386.47", c: 3.41, note: "Q3 EPS beat; revenue a slight miss" },
+      { t: "META", n: "Meta Platforms", p: "$697.52", c: 0.47, ah: "Up after hours (sources differ: +2% to +5%)", note: "Capex guide $135–145B" },
+      { t: "NVDA", n: "Nvidia", p: "–", c: 1.5, note: "Up more than 1.5%. Close not confirmed" },
+      { t: "AMD", n: "AMD", p: "–", c: 2.0, note: "Up about 2%. Close not confirmed" },
+      { t: "IBM", n: "IBM", p: "$251.49", c: 3.96, ah: "−5.1% after hours", note: "Revenue guide unchanged" },
+      { t: "LRCX", n: "Lam Research", p: "–", c: -1.0, ah: "−7.4% after hours to $241.57", note: "Guidance short of hopes" }
+    ],
+    sources: [
+      { t: "Yahoo Finance: stock market today, 21 Oct 2026", u: "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html" },
+      { t: "CNT Trading: daily market, 21 Oct 2026", u: "https://cnttrading.substack.com/p/daily-market-2026-10-21" } ]
+  },
+
+  /* Earnings: key findings per company. */
+  earnings: [
+    { co: "Meta Platforms", tk: "META", date: "2026-10-21", tag: "AI spending",
+      head: "Record revenue, but the AI bill now exceeds free cash flow.",
+      stats: [["Revenue", "~$64B vs $63.3B expected"], ["GAAP EPS", "$3.83 vs $3.56 expected"], ["EPS ex legal charge", "$7.40"], ["Q3 capex", "$34.9B"], ["Q3 free cash flow", "−$2.1B"], ["FY capex guide", "$135–145B (low end raised)"]],
+      find: [
+        "GAAP EPS includes a legal charge tied to a teen mental-health settlement. Excluding it, EPS would have been $7.40, against $1.05 a year ago.",
+        "Free cash flow turned negative at −$2.1B because capex ran at $34.9B in the quarter. The funding of the AI build-out is now the thing to watch.",
+        "Shares closed at $697.52 before the report and traded higher after hours." ],
+      src: { t: "Yahoo Finance earnings live", u: "https://finance.yahoo.com/markets/live/earnings-live-updates-all-eyes-on-musk-and-meta-as-q3-earnings-roll-on-134152191.html" } },
+    { co: "Tesla", tk: "TSLA", date: "2026-10-21", tag: "Autos · AI",
+      head: "Earnings beat on profit, small miss on sales.",
+      stats: [["Revenue", "$28.05B vs $28.13B expected"], ["Adjusted EPS", "$0.48 vs $0.44 expected"], ["Adj. EBITDA", "$3.90B vs $3.66B expected"]],
+      find: [
+        "Profit came in ahead while revenue was marginally light, so the beat is about margins and costs, not volume.",
+        "Free cash flow and capex were reported ahead of Wall Street estimates (exact figures were not in the sources I could read).",
+        "Shares closed at $386.47, up 3.4%, and rose a little further after hours." ],
+      src: { t: "Yahoo Finance earnings live", u: "https://finance.yahoo.com/markets/live/earnings-live-updates-all-eyes-on-musk-and-meta-as-q3-earnings-roll-on-134152191.html" } },
+    { co: "IBM", tk: "IBM", date: "2026-10-21", tag: "Software · AI",
+      head: "Software accelerated, but unchanged revenue guidance sent the shares lower.",
+      stats: [["Revenue", "$17.1B, +6% cc"], ["Operating EPS", "$2.95 vs $2.86 expected"], ["Software", "$7.8B, +9% cc"], ["Infrastructure", "$3.7B, +5%"], ["Consulting", "$5.3B, +2%"], ["FY revenue guide", "4–5% cc, unchanged"]],
+      find: [
+        "Software was the engine: data products grew 20%, Red Hat 11% and OpenShift ARR more than 30%.",
+        "Distributed infrastructure rose 32% while IBM Z fell 19%.",
+        "Free cash flow growth outlook was raised to more than $1B year on year. Shares rose 4% in the session, then fell about 5% after hours on the unchanged revenue guide." ],
+      src: { t: "Investing.com: IBM Q3 2026", u: "https://www.investing.com/news/company-news/ibm-q3-2026-slides-software-growth-accelerates-shares-slip-postearnings-93CH-4964343" } },
+    { co: "Netflix", tk: "NFLX", date: "2026-10-21", tag: "Media",
+      head: "Small EPS beat, but ad forecast cut and slowing growth.",
+      stats: [["Revenue", "$12.9B, in line"], ["EPS", "$0.87 vs $0.82 expected"], ["2026 ad revenue", "Cut to $2.7B from $3B"], ["Revenue growth", "Low double digits"]],
+      find: [
+        "Netflix guided to a fourth straight quarter of slowing top-line growth and lowered its 2026 ad revenue forecast.",
+        "It no longer reports subscriber numbers, which leaves analysts with less visibility. Live-sports ad revenue doubled.",
+        "Shares hit a new 52-week low of $65.04 on the day." ],
+      src: { t: "Forbes: 5 key takeaways", u: "https://www.forbes.com/sites/tonifitzgerald/2026/10/21/5-key-takeaways-from-q3-netflix-earnings-report/" } },
+    { co: "Lam Research", tk: "LRCX", date: "2026-10-21", tag: "Semis",
+      head: "Guidance did not rise as much as investors hoped.",
+      stats: [["After-hours move", "−7.4% to $241.57"], ["Session move", "−1.0%"]],
+      find: [
+        "The stock sold off after hours because forward guidance fell short of elevated expectations, not because of a weak quarter.",
+        "It follows a session where the chip index rose 2.0%, so expectations into the print were high." ],
+      src: { t: "CNT Trading: daily market", u: "https://cnttrading.substack.com/p/daily-market-2026-10-21" } }
   ],
 
-  views: [
-    { m: "US 10-year yield", v: "Neutral", h: "1–3 months",
-      r: "At the highest level since 2002, with a strong auction showing buyers exist. Oil, borrowing needs and more Fed hikes keep the upside risk alive.",
-      x: "A sustained close above 5.4% turns this bearish on bonds. A soft inflation print turns it bullish." },
-    { m: "S&P 500", v: "Neutral", h: "1–3 months",
-      r: "The index pulled back from a record on bond jitters. Valuations are sensitive to the 10-year from here.",
-      x: "The 10-year back below 5% with earnings holding up turns this bullish." },
-    { m: "Brent crude", v: "Bullish", h: "1 month",
-      r: "Attacks on vessels near the Strait of Hormuz keep a risk premium in the price, with Brent roughly $12 above WTI.",
-      x: "Shipping normalising or a ceasefire removes the premium." },
-    { m: "Gold", v: "Neutral", h: "3–6 months",
-      r: "Central bank buying supports the long-run case, but a firm dollar and yields above 5% cap the near-term upside.",
-      x: "The dollar index rolling over below 100, or falling yields, turns this bullish." }
-  ],
-
-  log: [
-    { d: "2026-10-07", call: "Neutral on the US 10-year yield after the strong auction", h: "1–3 months", rev: "Review on 7 Jan 2027", s: "Open" },
-    { d: "2026-10-07", call: "Neutral on gold while the dollar and yields firm", h: "3–6 months", rev: "Review on 7 Jan 2027", s: "Open" }
-  ],
+  calendar: {
+    note: "Dates and EPS estimates are tentative per Kiplinger.",
+    days: [
+      { d: "Thu 22 Oct, before open", items: "Procter & Gamble ($1.88), Honeywell ($2.17), Comcast ($0.99), Lockheed Martin ($7.52), Union Pacific ($3.47), Blackstone ($1.29), Spotify ($2.81), Valero ($20.90)" },
+      { d: "Thu 22 Oct, after close", items: "Newmont ($2.06), Western Digital ($4.08), Deckers ($1.79), Bloom Energy ($0.69), VeriSign ($2.46)" },
+      { d: "Fri 23 Oct, before open", items: "American Express ($4.58), SLB ($0.62)" }
+    ],
+    src: { t: "Kiplinger: earnings calendar, 19–23 Oct", u: "https://www.kiplinger.com/investing/stocks/17494/next-week-earnings-calendar-stocks" }
+  },
 
   about: [
     "I am a penultimate-year Accounting and Finance student at the University of Warwick and Head of Equity Research at the Quantitative Investment Group.",
-    "This page is where I write down what moved markets, what I think it means, and what would change my mind."
+    "This is where I track what moved markets, the earnings that mattered and what I think it means."
   ],
   how: [
-    "A daily table of the levels that matter: indices, yields, FX, commodities and a stock watchlist.",
-    "Short notes of about two pages, each with a takeaway, the facts, my view and what would change it.",
-    "Views with a horizon and an exit condition, so every call can be checked.",
-    "A decision log. When a horizon ends, I mark the call right, wrong or partly right."
+    "Markets: indices, yields, gold, oil and crypto, with the source and date on every number.",
+    "AI stocks: the mega-cap and chip names that drive the index, with day and after-hours moves.",
+    "Earnings: key findings from each report, and the week's calendar.",
+    "Notes: short pieces of about two pages with a takeaway, the facts, my view and what would change it."
   ],
 
   notes: [
-    { id: "ten-year-bonds-set-the-tone", date: "2026-10-07", tags: ["Rates", "Equities", "Macro"],
-      title: "The 10-year at 5.3%: bonds are setting the tone",
-      dek: "Treasury yields hit their highest since 2002 and pulled the S&P 500 off its record. The auction mattered more than any earnings headline.",
+    { id: "meta-ai-bill-outruns-cash-flow", date: "2026-10-21", tags: ["AI", "Earnings"],
+      title: "Meta's AI bill now outruns its cash flow",
+      dek: "Record revenue, but negative free cash flow in the quarter. The market rewarded the sales and ignored the funding gap for now.",
       sources: [
-        { t: "BabyPips: financial forex market recap, 7 Oct 2026", u: "https://www.babypips.com/news/financial-forex-market-recap-2026-10-07" },
-        { t: "Yahoo Finance: stock market today, 7 Oct 2026", u: "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-7-dow-sp-500-nasdaq-080241833.html" } ],
+        { t: "Yahoo Finance earnings live", u: "https://finance.yahoo.com/markets/live/earnings-live-updates-all-eyes-on-musk-and-meta-as-q3-earnings-roll-on-134152191.html" },
+        { t: "CNT Trading: daily market, 21 Oct 2026", u: "https://cnttrading.substack.com/p/daily-market-2026-10-21" } ],
       body: `
-<div class="takeaway"><p>The 10-year yield touched 5.36% and settled near 5.28% after a strong auction. Equities followed bonds lower, not the other way round.</p></div>
+<div class="takeaway"><p>Meta posted record revenue of about $64B, but spent $34.9B on capex in the quarter against negative free cash flow of $2.1B. The AI build-out is now being funded by something other than the cash the business generates.</p></div>
 <h2>What happened</h2>
-<p>On 7 October the US 10-year yield reached 5.36%, its highest since 2002, before easing to about 5.28% once a 10-year auction was well received. The 30-year yield went through 5.70%. The S&amp;P 500 slipped 0.3% to around 7,803, one day after a record.</p>
-<p>The Fed minutes added to the tone. All 19 officials backed September's quarter-point hike, and most expect another by year-end.</p>
+<p>Revenue beat the $63.3B consensus. GAAP earnings per share were $3.83, above the $3.56 expected, but that figure includes a legal charge tied to a teen mental-health settlement. Without it, EPS would have been $7.40. Full-year capex guidance was narrowed to $135–145B, with the low end raised from $130B.</p>
 <h2>Why it matters</h2>
-<p>At this level the discount rate, not earnings, drives the day. Higher oil, heavy government borrowing and AI-related corporate issuance all compete for the same buyers, so the auction was the real test. A strong result at the highest yield in over two decades shows demand exists at this price. It does not show that yields have peaked.</p>
+<p>When free cash flow turns negative while sales are at a record, the question moves from "is demand there?" to "who pays for the capacity?" Higher guided capex means more of the cost lands on the balance sheet, through debt or lower buybacks, before the revenue shows up. The after-hours rally says investors still trust the return on that spend.</p>
 <h2>My view</h2>
-<p>I treat 5.3% as a range to watch, not a ceiling. Equity valuations are most exposed if the 10-year moves decisively above 5.4%, so I stay neutral on both bonds and the index until one of the two conditions below changes.</p>
+<p>Revenue strength buys Meta time, not a pass. I would watch free cash flow and the capex guide each quarter, because they show whether spending is running ahead of monetisation.</p>
 <h2>What would change my mind</h2>
-<ul><li>A sustained close above 5.4%, which would suggest the auction demand was a one-off.</li><li>A soft inflation print that lets the front end price fewer hikes.</li></ul>` },
+<ul><li>Free cash flow staying negative for a second quarter without faster revenue growth.</li><li>The capex guide moving above $145B.</li></ul>` },
 
-    { id: "hormuz-floor-under-brent", date: "2026-10-07", tags: ["Commodities", "Macro"],
-      title: "Hormuz keeps a floor under Brent",
-      dek: "Brent held above $100 while WTI slipped. The gap between the two says more about shipping risk than about US supply.",
+    { id: "oil-110-fed-on-hold", date: "2026-10-21", tags: ["Commodities", "Rates", "Macro"],
+      title: "Oil at $110 and a Fed on hold",
+      dek: "Brent spiked on a drone strike at a Saudi field while gold slipped and the 10-year sat above 5%.",
       sources: [
-        { t: "BabyPips: financial forex market recap, 7 Oct 2026", u: "https://www.babypips.com/news/financial-forex-market-recap-2026-10-07" } ],
+        { t: "Yahoo Finance UK: price of oil", u: "https://uk.finance.yahoo.com/news/current-price-oil-october-21-120010312.html" },
+        { t: "Yahoo Finance: gold price today", u: "https://finance.yahoo.com/personal-finance/investing/article/gold-price-today-wednesday-october-21-2026-gold-prices-down-52-yoy-one-week-ahead-of-the-feds-rate-decision-105025200.html" },
+        { t: "CNT Trading: daily market", u: "https://cnttrading.substack.com/p/daily-market-2026-10-21" } ],
       body: `
-<div class="takeaway"><p>Brent rose above $102 on attacks near the Strait of Hormuz while WTI fell 1.4% to about $90. A roughly $12 gap points to a shipping premium, not US tightness.</p></div>
+<div class="takeaway"><p>Brent is around $110 and WTI near $98. The Fed is widely expected to hold next week, but the market still prices a possible hike after December. Gold, at about $4,118, is down 5.2% on a year ago.</p></div>
 <h2>What happened</h2>
-<p>Fresh Iranian attacks on vessels in the Strait of Hormuz pushed Brent above $102. WTI moved the other way, down 1.4% to near $90 after peaking near $92.70, even though US crude stocks fell by 3.19 million barrels.</p>
+<p>Brent traded near $110.7 at 8am ET and jumped above $110 again after a drone strike on an Aramco field in Saudi Arabia, easing by the close. WTI rose 1.3% to $98.44. The 10-year yield ended near 5.15%, with the 5-year at 4.95% and the 2-year at 4.81%.</p>
 <h2>Why it matters</h2>
-<p>Brent prices seaborne crude and WTI prices barrels in the US interior. When Brent runs about $12 ahead, well above the few dollars it usually sits, the market is paying for the risk of disrupted shipping rather than for a shortage at home. That premium can vanish quickly if the route calms, and it can widen if it does not.</p>
-<p>It also feeds the rates story. Higher oil raises inflation worries, which supports the case for further Fed hikes and keeps pressure on yields (see the note on the 10-year).</p>
+<p>Energy keeps feeding inflation worries, which is why rate hikes are still on the table even as the Fed is expected to pause. Gold pays no income, so with Treasuries yielding 5%, its appeal is weaker and it has fallen about 6% over the past month.</p>
 <h2>My view</h2>
-<p>I lean bullish on Brent for the next month because the risk premium has a clear cause that is still active. I would not extend that view further out, since a project of this kind rests on headlines rather than on supply and demand.</p>
+<p>Oil is the swing variable for rates this quarter. As long as supply risk stays in the price, I would not expect yields to fall far enough to help gold or long-duration equities.</p>
 <h2>What would change my mind</h2>
-<ul><li>Shipping through the Strait normalising, or a ceasefire holding.</li><li>The Brent-WTI gap closing below $8 without a fall in Brent.</li></ul>` },
+<ul><li>Brent falling back below $100 on calmer shipping and supply news.</li><li>A soft inflation print that lets the market drop the December hike.</li></ul>` },
 
-    { id: "gold-slips-dollar-yields", date: "2026-10-07", tags: ["Commodities", "FX", "Rates"],
-      title: "Gold slips 1.3% as the dollar and yields firm",
-      dek: "Central banks are still buying, but gold pays no income while Treasuries pay more than 5%.",
+    { id: "earnings-week-so-far", date: "2026-10-21", tags: ["Earnings", "AI"],
+      title: "Earnings week so far: the beats are not the story",
+      dek: "Meta, Tesla, IBM and Netflix all beat on profit. What moved the shares was guidance and spending.",
       sources: [
-        { t: "BabyPips: financial forex market recap, 7 Oct 2026", u: "https://www.babypips.com/news/financial-forex-market-recap-2026-10-07" } ],
+        { t: "Kiplinger: earnings calendar", u: "https://www.kiplinger.com/investing/stocks/17494/next-week-earnings-calendar-stocks" },
+        { t: "Investing.com: IBM Q3 2026", u: "https://www.investing.com/news/company-news/ibm-q3-2026-slides-software-growth-accelerates-shares-slip-postearnings-93CH-4964343" },
+        { t: "Forbes: Netflix takeaways", u: "https://www.forbes.com/sites/tonifitzgerald/2026/10/21/5-key-takeaways-from-q3-netflix-earnings-report/" } ],
       body: `
-<div class="takeaway"><p>Gold fell 1.3% to about $4,112 as the dollar index rose 0.42% to 102.3 and yields climbed. Chinese central bank buying continued, which limits the downside.</p></div>
+<div class="takeaway"><p>Tesla, IBM, Netflix and Meta each beat on earnings. IBM fell after hours on unchanged revenue guidance and Lam Research fell 7.4% on guidance, while Meta rose on revenue strength.</p></div>
 <h2>What happened</h2>
-<p>Gold dropped to a morning low near $4,072 before steadying around $4,112. The dollar gained against six of seven major currencies. The yen was the only major to rise, by about 0.05%, with USD/JPY near 158.04.</p>
+<p>Tesla earned $0.48 a share against $0.44 expected, with revenue of $28.05B just short of $28.13B. IBM earned $2.95 against $2.86 and kept its 4–5% revenue growth guide. Netflix earned $0.87 against $0.82 but cut its 2026 ad revenue forecast to $2.7B. Lam Research slid after hours when guidance fell short of hopes.</p>
 <h2>Why it matters</h2>
-<p>Gold competes with Treasuries. With the 10-year between 5.28% and 5.36%, holding a metal that pays nothing has a visible cost, and a stronger dollar makes it dearer for buyers elsewhere. Official-sector buying works the other way, which is why I read this as a pause in a long-run trend and not a break of it.</p>
+<p>After a three-day winning streak for the S&P 500, and with yields above 5%, a beat is largely expected. The reaction depends on whether guidance justifies the multiple, which is why the same quarter can send one stock up and another down.</p>
 <h2>My view</h2>
-<p>Neutral for the next three to six months. The structural case is intact, but the combination of a firm dollar and high yields leaves little room to run in the near term.</p>
+<p>I would read the guidance line and the capex line first, and the EPS line last.</p>
 <h2>What would change my mind</h2>
-<ul><li>The dollar index rolling over below 100, or the 10-year falling back through 5%.</li><li>A close below the $4,072 low on rising yields, which would make me more cautious.</li></ul>` }
+<ul><li>A run of guidance raises from the remaining AI hardware names this week.</li><li>A broad pullback in the chip index despite beats.</li></ul>` }
   ]
 };
 /* ====================== end of editable block ====================== */
@@ -311,6 +381,9 @@ function chg(c) {
   const up = c > 0;
   return '<span class="chg ' + (up ? "up" : "down") + '">' + (up ? "▲ +" : "▼ −") + Math.abs(c).toFixed(2) + "%</span>";
 }
+function srcList(list) {
+  return '<div class="sources"><span class="label">Sources</span><ul>' + list.map(s => '<li><a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + "</a></li>").join("") + "</ul></div>";
+}
 function findRow(name) {
   for (const g of SITE.snapshot.groups) for (const r of g.rows) if (r.n === name) return r;
   return null;
@@ -318,42 +391,53 @@ function findRow(name) {
 function renderRail() {
   $("#rail").innerHTML = SITE.snapshot.rail.map(n => {
     const r = findRow(n); if (!r) return "";
-    return '<div><span class="label">' + esc(n) + '</span><span class="v">' + esc(r.v) + "</span>" + chg(r.c) + "</div>";
+    const pct = r.v === "–" && r.c != null;
+    return '<div><span class="label">' + esc(n) + '</span><span class="v ' + (pct ? (r.c > 0 ? "up" : "down") : "") + '">' + (pct ? (r.c > 0 ? "+" : "−") + Math.abs(r.c).toFixed(2) + "%" : esc(r.v)) + "</span>" + (pct ? '<span class="chg flat">day move</span>' : chg(r.c)) + "</div>";
   }).join("");
 }
 function noteItem(n) {
   return '<li><div class="meta"><span class="label">' + fmtDate(n.date) + '</span><span class="tag">' + n.tags.map(esc).join(" · ") +
     '</span><span class="label">' + readMin(n) + '</span></div><h3><a href="#note-' + n.id + '">' + esc(n.title) + "</a></h3><p>" + esc(n.dek) + "</p></li>";
 }
-function snapshotPanel() {
+function levelsPanel() {
   const rows = SITE.snapshot.groups.map(g =>
     '<tr><th colspan="3">' + esc(g.name) + "</th></tr>" +
     g.rows.map(r => '<tr><td class="n">' + esc(r.n) + (r.note ? "<small>" + esc(r.note) + "</small>" : "") +
       '</td><td class="r lv">' + esc(r.v) + '</td><td class="r">' + chg(r.c) + "</td></tr>").join("")).join("");
-  return '<div class="stamp"><span class="label">As of ' + esc(SITE.snapshot.asOf) + "</span>" +
-    (SITE.sample ? '<span class="chip">Sample levels</span>' : "") + '</div><div class="panel scroll"><table><tbody>' + rows + "</tbody></table></div>";
+  return '<div class="stamp"><span class="label">As of ' + esc(SITE.snapshot.asOf) + '</span></div><div class="panel scroll"><table><tbody>' + rows + "</tbody></table></div>";
 }
-function watchPanel() {
-  const rows = SITE.watchlist.map(w => '<tr><td class="n"><b class="num">' + esc(w.t) + "</b> " + esc(w.n) +
-    (w.note ? "<small>" + esc(w.note) + "</small>" : "") + '</td><td class="r lv">' + (w.v == null ? "–" : esc(w.v)) +
-    '</td><td class="r">' + chg(w.c) + "</td></tr>").join("");
-  return '<div class="panel scroll"><table><tbody><tr><th colspan="3">Stocks on watch' +
-    (SITE.sample ? ' <span class="chip">Example</span>' : "") + "</th></tr>" + rows + "</tbody></table></div>";
+function aiPanel(limit) {
+  const rows = SITE.ai.rows.slice(0, limit || 99).map(w => '<tr><td class="n"><b class="num">' + esc(w.t) + "</b> " + esc(w.n) +
+    '<small>' + esc(w.note || "") + (w.ah ? (w.note ? " · " : "") + esc(w.ah) : "") + '</small></td><td class="r lv">' + esc(w.p) + '</td><td class="r">' + chg(w.c) + "</td></tr>").join("");
+  return '<div class="panel scroll"><table><tbody><tr><th colspan="3">AI and mega-cap tech · ' + esc(SITE.ai.asOf) + "</th></tr>" + rows + "</tbody></table></div>";
 }
-function viewsTable() {
-  return '<div class="scroll"><table class="grid-t"><thead><tr><th>Market</th><th>View</th><th>Horizon</th><th>Why</th><th>What changes my mind</th></tr></thead><tbody>' +
-    SITE.views.map(v => '<tr><td class="first" data-l="Market"><b>' + esc(v.m) + '</b></td><td data-l="View"><span class="pill ' + v.v.toLowerCase() + '">' + esc(v.v) +
-      '</span></td><td data-l="Horizon" class="num">' + esc(v.h) + '</td><td data-l="Why">' + esc(v.r) + '</td><td data-l="What changes my mind">' + esc(v.x) + "</td></tr>").join("") +
-    "</tbody></table></div>";
+function earnBlock(e, compact) {
+  return '<article class="earn"><div class="meta"><span class="label">' + fmtDate(e.date) + '</span><span class="tag">' + esc(e.tag) + '</span></div>' +
+    '<h3><span class="num tk">' + esc(e.tk) + "</span> " + esc(e.co) + "</h3><p class=\"ehead\">" + esc(e.head) + "</p>" +
+    (compact ? "" : '<dl class="stats">' + e.stats.map(s => "<div><dt>" + esc(s[0]) + "</dt><dd>" + esc(s[1]) + "</dd></div>").join("") + "</dl><ul>" +
+      e.find.map(f => "<li>" + esc(f) + "</li>").join("") + '</ul><a class="back" href="' + esc(e.src.u) + '" target="_blank" rel="noopener">' + esc(e.src.t) + " ↗</a>") +
+    "</article>";
 }
 
 function pageHome() {
-  const miniViews = SITE.views.map(v => '<span class="pill ' + v.v.toLowerCase() + '" style="margin:0 8px 8px 0">' + esc(v.m) + " · " + esc(v.v) + "</span>").join("");
   return '<div class="cols"><section><div class="sec-h"><h2>Latest notes</h2><a href="#notes">All notes</a></div><ul class="nl">' +
-    notes.slice(0, 4).map(noteItem).join("") +
-    '</ul><div class="sec-h" style="margin-top:34px"><h2>Current views</h2><a href="#views">Details</a></div><div style="padding-top:14px">' + miniViews + "</div></section>" +
-    '<aside><div class="sec-h" style="margin-bottom:12px"><h2>Levels</h2></div>' + snapshotPanel() +
-    '<div style="margin-top:18px">' + watchPanel() + "</div></aside></div>";
+    notes.slice(0, 3).map(noteItem).join("") +
+    '</ul><div class="sec-h" style="margin-top:34px"><h2>Earnings so far</h2><a href="#earnings">Key findings</a></div><div class="earn-list">' +
+    SITE.earnings.slice(0, 4).map(e => earnBlock(e, true)).join("") + "</div></section>" +
+    '<aside><div class="sec-h" style="margin-bottom:12px"><h2>Levels</h2><a href="#markets">All</a></div>' + levelsPanel() +
+    '<div class="sec-h" style="margin:26px 0 12px"><h2>AI stocks</h2><a href="#ai">All</a></div>' + aiPanel(5) + "</aside></div>";
+}
+function pageMarkets() {
+  return '<h1 class="page-h">Markets</h1><p class="lede">' + esc(SITE.snapshot.caveat) + '</p><div style="max-width:560px">' + levelsPanel() + "</div>" + srcList(SITE.snapshot.sources);
+}
+function pageAI() {
+  return '<h1 class="page-h">AI stocks</h1><p class="lede">' + esc(SITE.ai.summary) + '</p><div style="max-width:620px">' + aiPanel() + "</div>" + srcList(SITE.ai.sources);
+}
+function pageEarnings() {
+  const cal = SITE.calendar;
+  return '<h1 class="page-h">Earnings</h1><p class="lede">Key findings from the reports that moved the market, and what is still to come this week.</p><div class="earn-list">' +
+    SITE.earnings.map(e => earnBlock(e, false)).join("") + '</div><div class="sec-h" style="margin-top:34px"><h2>Still to report</h2></div><p class="label" style="margin:10px 0">' + esc(cal.note) + "</p>" +
+    cal.days.map(d => '<div class="cal"><b class="label">' + esc(d.d) + "</b><p>" + esc(d.items) + "</p></div>").join("") + srcList([cal.src]);
 }
 function pageNotes() {
   const tags = ["All"].concat(Array.from(new Set(notes.flatMap(n => n.tags))));
@@ -367,20 +451,9 @@ function pageNote(id) {
   const n = notes[i], newer = notes[i - 1], older = notes[i + 1];
   return '<article class="art"><a class="back" href="#notes">← All notes</a><h1>' + esc(n.title) + '</h1><p class="dek">' + esc(n.dek) +
     '</p><div class="byline"><span class="label">' + fmtDate(n.date) + '</span><span class="tag">' + n.tags.map(esc).join(" · ") + '</span><span class="label">' + readMin(n) +
-    "</span></div>" + n.body +
-    (n.sources && n.sources.length ? '<div class="sources"><span class="label">Sources</span><ul>' + n.sources.map(s => '<li><a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + "</a></li>").join("") + "</ul></div>" : "") +
+    "</span></div>" + n.body + (n.sources && n.sources.length ? srcList(n.sources) : "") +
     '<div class="pn">' + (newer ? '<a href="#note-' + newer.id + '"><span class="label">Newer</span><b>' + esc(newer.title) + "</b></a>" : "<span></span>") +
     (older ? '<a href="#note-' + older.id + '" style="text-align:right"><span class="label">Older</span><b>' + esc(older.title) + "</b></a>" : "") + "</div></article>";
-}
-function pageViews() {
-  return '<h1 class="page-h">Views</h1><p class="lede">Each view has a horizon and an exit condition. These are research views, not recommendations.' +
-    (SITE.sample ? ' <span class="chip">Sample views</span>' : "") + "</p>" + viewsTable();
-}
-function pageLog() {
-  return '<h1 class="page-h">Decision log</h1><p class="lede">Every call I publish is recorded here. When the horizon ends I mark it right, wrong or partly right, and say why.' +
-    (SITE.sample ? ' <span class="chip">Example entries</span>' : "") + '</p><div class="scroll"><table class="grid-t"><thead><tr><th>Date</th><th>Call</th><th>Horizon</th><th>Review</th><th>Status</th></tr></thead><tbody>' +
-    SITE.log.map(l => '<tr><td class="first num" data-l="Date">' + fmtDate(l.d) + '</td><td data-l="Call">' + esc(l.call) + '</td><td data-l="Horizon" class="num">' + esc(l.h) +
-      '</td><td data-l="Review">' + esc(l.rev) + '</td><td data-l="Status"><span class="pill ' + l.s.toLowerCase() + '">' + esc(l.s) + "</span></td></tr>").join("") + "</tbody></table></div>";
 }
 function pageAbout() {
   return '<div class="about"><h1 class="page-h">About</h1>' + SITE.about.map(p => "<p>" + esc(p) + "</p>").join("") +
@@ -391,9 +464,10 @@ function route() { const h = (location.hash || "").slice(1); return h || "home";
 function render(t) {
   let html = null, nav = t;
   if (t === "home") html = pageHome();
+  else if (t === "markets") html = pageMarkets();
+  else if (t === "ai") html = pageAI();
+  else if (t === "earnings") html = pageEarnings();
   else if (t === "notes") html = pageNotes();
-  else if (t === "views") html = pageViews();
-  else if (t === "log") html = pageLog();
   else if (t === "about") html = pageAbout();
   else if (t.indexOf("note-") === 0) { html = pageNote(t.slice(5)); nav = "notes"; }
   if (html == null) { html = pageHome(); nav = "home"; }
@@ -429,10 +503,6 @@ $("#mark").textContent = SITE.name;
 $("#today").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 $("#disc").textContent = SITE.disclaimer;
 $("#copy").textContent = "© " + new Date().getFullYear() + " " + SITE.name;
-if (SITE.sample) {
-  const f = $("#flag"); f.hidden = false;
-  f.textContent = "Sample content. Levels are from " + SITE.snapshot.asOf + " and the notes are templates. Edit the SITE block in index.html, then set sample to false.";
-}
 renderRail();
 render(route());
 </script>
