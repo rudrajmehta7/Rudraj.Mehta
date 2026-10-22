@@ -19,16 +19,9 @@
   --body:"Source Serif 4",Georgia,"Times New Roman",serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0C131D; --surface:#131C29; --ink:#E6EBF2; --muted:#93A0B3; --rule:#263446;
-    --chip:#1B2738; --accent:#8393FF; --accent-ink:#0C131D;
-    --up:#4FD08F; --down:#FF7A72; --warn:#E6B450; color-scheme:dark;
-  }
-}
 :root[data-theme="dark"]{
-  --bg:#0C131D; --surface:#131C29; --ink:#E6EBF2; --muted:#93A0B3; --rule:#263446;
-  --chip:#1B2738; --accent:#8393FF; --accent-ink:#0C131D;
+  --bg:#000000; --surface:#0E0E0E; --ink:#EDEDED; --muted:#9B9B9B; --rule:#2B2B2B;
+  --chip:#1A1A1A; --accent:#8F9CFF; --accent-ink:#000000;
   --up:#4FD08F; --down:#FF7A72; --warn:#E6B450; color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -1803,7 +1796,7 @@ window.addEventListener("hashchange", () => render(route()));
 
 $("#theme").addEventListener("click", () => {
   const root = document.documentElement;
-  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const dark = root.dataset.theme === "dark";
   const next = dark ? "light" : "dark";
   root.dataset.theme = next;
   try { localStorage.setItem("rr-theme", next); } catch (e) {}
