@@ -119,7 +119,7 @@ a{color:inherit}
 .byline{display:flex;flex-wrap:wrap;gap:4px 14px;padding:10px 0;border-block:1px solid var(--rule);margin-bottom:22px}
 .art h2{font-family:var(--display);font-stretch:80%;font-weight:700;font-size:23px;margin:28px 0 6px}
 .art p,.art li{margin:0 0 14px}
-.art ul{padding-left:22px;margin:0 0 14px}
+.art ul,.art ol{padding-left:22px;margin:0 0 14px}
 .takeaway{border-block:2px solid var(--ink);padding:12px 0 2px;margin:0 0 8px}
 .takeaway p{font-size:19px;line-height:1.5;font-weight:500}
 .sources{margin-top:30px;padding-top:12px;border-top:1px solid var(--rule);font-size:14px}
@@ -1387,6 +1387,34 @@ const SITE = {
   ],
 
   notes: [
+    { id: "amazon-falls-4-percent-ai-bill", date: "2026-10-22", tags: ["AI", "Equities", "Earnings"],
+      title: "Amazon fell 4%. It's the AI bill again, and earnings are a week away.",
+      dek: "Amazon is the biggest spender in the AI build-out. On Thursday the market asked, for the second time this week, whether the money will come back.",
+      sources: [],
+      body: `
+<div class="takeaway"><p>Amazon fell 3.9% on Thursday 22 October to close at $252.13, down $10.24. It was one of several mega-cap tech laggards in a day when the AI trade sold off. There was no Amazon-specific bad news in the reports I found. The reasons were general: worry about AI spending, pushback on data centres, and positioning ahead of results on 29 October.</p></div>
+<h2>Why it fell</h2>
+<ul>
+<li><b>AI spending worries.</b> Amazon's projected AI infrastructure capex is about $220 billion. That has pushed its trailing twelve-month free cash flow to roughly -$7.6 billion, meaning it is spending more than the cash it generates. It's the same funding concern that hit Meta on Wednesday.</li>
+<li><b>Pushback on data centres.</b> Reports point to political and local resistance to large AI data centres and scrutiny of local power grids. That raises the cost and the regulatory risk of building more.</li>
+<li><b>Earnings are close.</b> Amazon reports its third-quarter results on 29 October. Traders often cut positions before results, and one source cited profit-taking after recent gains. Amazon opened down 3.5% while its retail sector was down 1.7%.</li>
+<li><b>A broad selloff.</b> TSMC also fell nearly 4% and the chip sector fell about 3.5%. Amazon moved with the sector rather than on its own news.</li>
+</ul>
+<h2>The legal overhang</h2>
+<p>On 31 August the FTC and 22 states sued Amazon, alleging it overcharged advertisers by more than $20 billion. This isn't new, but it adds risk.</p>
+<h2>What hasn't changed</h2>
+<p>Amazon's business is large and profitable. Annual revenue is about $717 billion and net profit about $78 billion. Analysts' average price target is about $324, against a range of $207 to $405, and most rate the stock a Buy. Management has guided revenue to $197 billion to $202 billion, which points to slower e-commerce growth and currency headwinds.</p>
+<h2>Where Amazon fits in the AI-funding story</h2>
+<p>The article on this site, "Why you're probably bankrolling the AI boom", argued that Big Tech is spending more than it earns. Amazon is the biggest example by capex dollars. Meta showed what happens when investors lose patience, and Amazon is the next test.</p>
+<h2>What to watch on 29 October</h2>
+<ol>
+<li><b>AWS growth.</b> Does cloud revenue growth justify the spending?</li>
+<li><b>Capex guidance.</b> Does Amazon raise or hold its $220 billion?</li>
+<li><b>Free cash flow.</b> Does the negative trend deepen?</li>
+<li><b>Retail guidance.</b> Is the slowdown in e-commerce growth a trend?</li>
+<li><b>Reaction.</b> Meta beat on profit and still fell, so the move will depend on guidance more than on the numbers.</li>
+</ol>
+<p><i>This article is for information only and is not investment advice.</i></p>` },
     { id: "france-bond-yield-passes-5-percent", date: "2026-10-22", tags: ["Rates", "Macro"],
       title: "France's bond yield just passed 5%. It hasn't been this high since 2002.",
       dek: "The government can't pass a budget, the streets are in uproar, and the bond market is charging France more than it has in over two decades. Moody's decides on its credit rating tomorrow.",
