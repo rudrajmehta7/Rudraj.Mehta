@@ -168,6 +168,9 @@ a{color:inherit}
 .mv td{padding:7px 12px 7px 0;border-bottom:1px solid var(--rule);font-size:16px}
 .mv .r{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;padding-right:0}
 .mv th.r{text-align:right;padding-right:0}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:22px;align-items:start}
+.about .links{margin:6px 0 0}
+.about .links a{font-family:var(--mono);font-size:13px;letter-spacing:.04em}
 footer{margin-top:56px;padding-top:14px;border-top:2px solid var(--ink);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px}
 footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1.5}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
@@ -184,10 +187,10 @@ footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1
     </div>
     <nav class="nav" id="nav" aria-label="Sections">
       <a href="#home" data-route="home">Today</a>
+      <a href="#articles" data-route="articles">Articles</a>
       <a href="#markets" data-route="markets">Markets</a>
       <a href="#ai" data-route="ai">AI stocks</a>
       <a href="#earnings" data-route="earnings">Earnings</a>
-      <a href="#articles" data-route="articles">Articles</a>
       <a href="#about" data-route="about">About</a>
       <button class="theme" id="theme" type="button" aria-label="Switch light and dark theme">Theme</button>
     </nav>
@@ -215,25 +218,354 @@ const SITE = {
 
   snapshot: {
     asOf: "21 Oct 2026 close",
-    caveat: "Index point levels for the S&P 500 and Nasdaq were not consistent across sources, so only the percentage moves are shown. Gold and oil are page snapshots, not settlements.",
+    caveat: "Live quotes from Yahoo Finance load when available, delayed by up to 15 minutes. Until then, rows show the 21 Oct close where I have it and a dash where I do not. Gold and oil are page snapshots, not settlements.",
     rail: ["S&P 500", "Dow Jones", "Nasdaq Composite", "US 10-year yield", "Gold", "Brent crude"],
     groups: [
-      { name: "Equities", rows: [
-        { n: "S&P 500", v: "–", sym: "^GSPC", c: 0.5, note: "Third straight gain. Sources give +0.46% to +0.58%" },
-        { n: "Dow Jones", v: "52,856", sym: "^DJI", c: 0.69 },
-        { n: "Nasdaq Composite", v: "–", sym: "^IXIC", c: 0.94, note: "Led by chips and SpaceX" },
-        { n: "VIX", v: "16.68", sym: "^VIX", c: -3.64 } ]},
-      { name: "Rates", rows: [
-        { n: "US 10-year yield", v: "5.15%", sym: "^TNX", note: "Up 3bp on the day" },
-        { n: "US 5-year yield", v: "4.95%", sym: "^FVX" },
-        { n: "US 2-year yield", v: "4.81%" } ]},
-      { name: "Commodities", rows: [
-        { n: "Gold", v: "$4,118", sym: "GC=F", c: -0.76, note: "Down 5.2% on a year ago. Fed decision due next week" },
-        { n: "WTI crude (Dec)", v: "$98.44", sym: "CL=F", c: 1.33 },
-        { n: "Brent crude", v: "~$110.7", sym: "BZ=F", note: "8am ET. Spiked above $110 after a drone strike on a Saudi Aramco field" } ]},
-      { name: "Crypto", rows: [
-        { n: "Bitcoin", v: "$82,613", sym: "BTC-USD", c: -0.03 } ]}
-    ],
+    {
+        "name": "US equities",
+        "rows": [
+            {
+                "n": "S&P 500",
+                "v": "–",
+                "c": 0.5,
+                "note": "Third straight gain. Sources give +0.46% to +0.58%",
+                "sym": "^GSPC"
+            },
+            {
+                "n": "Dow Jones",
+                "v": "52,856",
+                "c": 0.69,
+                "sym": "^DJI"
+            },
+            {
+                "n": "Nasdaq Composite",
+                "v": "–",
+                "c": 0.94,
+                "note": "Led by chips and SpaceX",
+                "sym": "^IXIC"
+            },
+            {
+                "n": "Nasdaq 100",
+                "v": "–",
+                "sym": "^NDX",
+                "more": true
+            },
+            {
+                "n": "Russell 2000",
+                "v": "–",
+                "sym": "^RUT",
+                "more": true
+            },
+            {
+                "n": "VIX",
+                "v": "16.68",
+                "c": -3.64,
+                "sym": "^VIX"
+            }
+        ]
+    },
+    {
+        "name": "Europe",
+        "rows": [
+            {
+                "n": "FTSE 100",
+                "v": "–",
+                "sym": "^FTSE",
+                "more": true
+            },
+            {
+                "n": "DAX",
+                "v": "–",
+                "sym": "^GDAXI",
+                "more": true
+            },
+            {
+                "n": "CAC 40",
+                "v": "–",
+                "sym": "^FCHI",
+                "more": true
+            },
+            {
+                "n": "Euro Stoxx 50",
+                "v": "–",
+                "sym": "^STOXX50E",
+                "more": true
+            }
+        ]
+    },
+    {
+        "name": "Asia-Pacific",
+        "rows": [
+            {
+                "n": "Nikkei 225",
+                "v": "–",
+                "note": "Down about 2% on Thursday (Reuters, intraday)",
+                "sym": "^N225",
+                "more": true
+            },
+            {
+                "n": "Hang Seng",
+                "v": "–",
+                "note": "Down more than 3% on Thursday (Reuters, intraday)",
+                "sym": "^HSI",
+                "more": true
+            },
+            {
+                "n": "CSI 300",
+                "v": "–",
+                "note": "Down 2% on Thursday, near a technical bear market (Reuters)",
+                "sym": "000300.SS",
+                "more": true
+            },
+            {
+                "n": "Shanghai Composite",
+                "v": "–",
+                "sym": "000001.SS",
+                "more": true
+            },
+            {
+                "n": "Kospi",
+                "v": "–",
+                "note": "Down more than 4% on Thursday (Reuters, intraday)",
+                "sym": "^KS11",
+                "more": true
+            },
+            {
+                "n": "Nifty 50",
+                "v": "–",
+                "sym": "^NSEI",
+                "more": true
+            },
+            {
+                "n": "Sensex",
+                "v": "–",
+                "sym": "^BSESN",
+                "more": true
+            },
+            {
+                "n": "ASX 200",
+                "v": "–",
+                "sym": "^AXJO",
+                "more": true
+            }
+        ]
+    },
+    {
+        "name": "Rates",
+        "rows": [
+            {
+                "n": "US 10-year yield",
+                "v": "5.15%",
+                "note": "Up 3bp on the day",
+                "sym": "^TNX"
+            },
+            {
+                "n": "US 5-year yield",
+                "v": "4.95%",
+                "sym": "^FVX"
+            },
+            {
+                "n": "US 2-year yield",
+                "v": "4.81%"
+            },
+            {
+                "n": "US 30-year yield",
+                "v": "–",
+                "sym": "^TYX",
+                "more": true
+            }
+        ]
+    },
+    {
+        "name": "FX",
+        "rows": [
+            {
+                "n": "Dollar index",
+                "v": "–",
+                "sym": "DX-Y.NYB",
+                "more": true
+            },
+            {
+                "n": "GBP/USD",
+                "v": "–",
+                "sym": "GBPUSD=X",
+                "more": true
+            },
+            {
+                "n": "EUR/USD",
+                "v": "–",
+                "sym": "EURUSD=X",
+                "more": true
+            },
+            {
+                "n": "USD/JPY",
+                "v": "–",
+                "sym": "JPY=X",
+                "more": true
+            },
+            {
+                "n": "USD/INR",
+                "v": "–",
+                "sym": "INR=X",
+                "more": true
+            },
+            {
+                "n": "AUD/USD",
+                "v": "–",
+                "sym": "AUDUSD=X",
+                "more": true
+            }
+        ]
+    },
+    {
+        "name": "Commodities",
+        "rows": [
+            {
+                "n": "Gold",
+                "v": "$4,118",
+                "c": -0.76,
+                "note": "Down 5.2% on a year ago. Fed decision due next week",
+                "sym": "GC=F"
+            },
+            {
+                "n": "WTI crude (Dec)",
+                "v": "$98.44",
+                "c": 1.33,
+                "sym": "CL=F"
+            },
+            {
+                "n": "Brent crude",
+                "v": "~$110.7",
+                "note": "8am ET. Spiked above $110 after a drone strike on a Saudi Aramco field",
+                "sym": "BZ=F"
+            },
+            {
+                "n": "Silver",
+                "v": "–",
+                "sym": "SI=F",
+                "more": true
+            },
+            {
+                "n": "Copper",
+                "v": "–",
+                "sym": "HG=F",
+                "more": true
+            },
+            {
+                "n": "Natural gas",
+                "v": "–",
+                "sym": "NG=F",
+                "more": true
+            }
+        ]
+    },
+    {
+        "name": "Crypto",
+        "rows": [
+            {
+                "n": "Bitcoin",
+                "v": "$82,613",
+                "c": -0.03,
+                "sym": "BTC-USD"
+            },
+            {
+                "n": "Ether",
+                "v": "–",
+                "sym": "ETH-USD",
+                "more": true
+            }
+        ]
+    },
+    {
+        "name": "Large-cap stocks",
+        "rows": [
+            {
+                "n": "Apple (AAPL)",
+                "v": "–",
+                "sym": "AAPL",
+                "more": true
+            },
+            {
+                "n": "Microsoft (MSFT)",
+                "v": "–",
+                "sym": "MSFT",
+                "more": true
+            },
+            {
+                "n": "Alphabet (GOOGL)",
+                "v": "–",
+                "sym": "GOOGL",
+                "more": true
+            },
+            {
+                "n": "Amazon (AMZN)",
+                "v": "–",
+                "sym": "AMZN",
+                "more": true
+            },
+            {
+                "n": "Nvidia (NVDA)",
+                "v": "–",
+                "sym": "NVDA",
+                "more": true
+            },
+            {
+                "n": "Meta (META)",
+                "v": "–",
+                "sym": "META",
+                "more": true
+            },
+            {
+                "n": "Tesla (TSLA)",
+                "v": "–",
+                "sym": "TSLA",
+                "more": true
+            },
+            {
+                "n": "Berkshire Hathaway (BRK-B)",
+                "v": "–",
+                "sym": "BRK-B",
+                "more": true
+            },
+            {
+                "n": "JPMorgan (JPM)",
+                "v": "–",
+                "sym": "JPM",
+                "more": true
+            },
+            {
+                "n": "Visa (V)",
+                "v": "–",
+                "sym": "V",
+                "more": true
+            },
+            {
+                "n": "Eli Lilly (LLY)",
+                "v": "–",
+                "sym": "LLY",
+                "more": true
+            },
+            {
+                "n": "Walmart (WMT)",
+                "v": "–",
+                "sym": "WMT",
+                "more": true
+            },
+            {
+                "n": "Exxon Mobil (XOM)",
+                "v": "–",
+                "sym": "XOM",
+                "more": true
+            },
+            {
+                "n": "UnitedHealth (UNH)",
+                "v": "–",
+                "sym": "UNH",
+                "more": true
+            }
+        ]
+    }
+],
     sources: [
       { t: "Yahoo Finance: stock market today, 21 Oct 2026", u: "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html" },
       { t: "24/7 Wall St: closing bell, 21 Oct 2026", u: "https://247wallst.com/cards/tech-is-still-carrying-this-market-the-nasdaq-s-0-94-gain-gspc-market-bell-01m5g0zt5dgcctbwmxyzhm7h02" },
@@ -241,7 +573,6 @@ const SITE = {
       { t: "Yahoo Finance UK: price of oil, 21 Oct 2026", u: "https://uk.finance.yahoo.com/news/current-price-oil-october-21-120010312.html" },
       { t: "CNT Trading: daily market, 21 Oct 2026", u: "https://cnttrading.substack.com/p/daily-market-2026-10-21" } ]
   },
-
   /* Headlines for the Today page. Add new items at the top. tag: short label. */
   headlines: {
     asOf: "Thu 22 Oct 2026, morning",
@@ -260,26 +591,740 @@ const SITE = {
     ]
   },
 
-  /* AI and mega-cap tech. p = price, c = day % move, ah = after-hours move. */
+  /* AI and mega-cap tech. p = price, c = day % move. Live quotes fill these in when available. */
   ai: {
-    asOf: "21 Oct 2026",
-    summary: "Chipmakers led the rebound: the chip index rose 2.0%. Nasdaq 100 futures then fell about 1.5% overnight as investors weighed Meta's spending against its cash flow and Lam Research's guidance.",
+    asOf: "21 Oct 2026 close",
+    summary: "AI-linked shares sold off sharply on Thursday as investors questioned how the industry's spending will be paid for, with chipmakers and neoclouds hit hardest. See the article in Articles for the four reasons. Live prices load when available; until then, a dash means I do not have a confirmed close.",
+    groups: [
+    "Chips and equipment",
+    "Hyperscalers and platforms",
+    "AI software and data",
+    "AI infrastructure and neoclouds"
+],
     rows: [
-      { t: "SPCX", sym: "SPCX", n: "SpaceX", p: "$159.31", c: 7.79, note: "Rallied on AI-led results" },
-      { t: "TSLA", sym: "TSLA", n: "Tesla", p: "$386.47", c: 3.41, note: "Q3 EPS beat; revenue a slight miss" },
-      { t: "META", sym: "META", n: "Meta Platforms", p: "$697.52", c: 0.47, ah: "Up after hours (sources differ: +2% to +5%)", note: "Capex guide $135–145B" },
-      { t: "NVDA", sym: "NVDA", n: "Nvidia", p: "–", c: 1.5, note: "Up more than 1.5%. Close not confirmed" },
-      { t: "AMD", sym: "AMD", n: "AMD", p: "–", c: 2.0, note: "Up about 2%. Close not confirmed" },
-      { t: "IBM", sym: "IBM", n: "IBM", p: "$251.49", c: 3.96, ah: "−5.1% after hours", note: "Revenue guide unchanged" },
-      { t: "LRCX", sym: "LRCX", n: "Lam Research", p: "–", c: -1.0, ah: "−7.4% after hours to $241.57", note: "Guidance short of hopes" }
-    ],
+    {
+        "t": "NVDA",
+        "sym": "NVDA",
+        "n": "Nvidia",
+        "grp": "Chips and equipment",
+        "p": "–",
+        "c": 1.5,
+        "note": "Up more than 1.5%. Close not confirmed",
+        "home": true
+    },
+    {
+        "t": "AMD",
+        "sym": "AMD",
+        "n": "AMD",
+        "grp": "Chips and equipment",
+        "p": "–",
+        "c": 2.0,
+        "note": "Up about 2%. Close not confirmed",
+        "home": true
+    },
+    {
+        "t": "AVGO",
+        "sym": "AVGO",
+        "n": "Broadcom",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "TSM",
+        "sym": "TSM",
+        "n": "TSMC",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "ASML",
+        "sym": "ASML",
+        "n": "ASML",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "MU",
+        "sym": "MU",
+        "n": "Micron",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "MRVL",
+        "sym": "MRVL",
+        "n": "Marvell",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "ARM",
+        "sym": "ARM",
+        "n": "Arm Holdings",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "INTC",
+        "sym": "INTC",
+        "n": "Intel",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "QCOM",
+        "sym": "QCOM",
+        "n": "Qualcomm",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "TXN",
+        "sym": "TXN",
+        "n": "Texas Instruments",
+        "grp": "Chips and equipment",
+        "p": "–",
+        "note": "Q3 revenue +28%, reported 21 Oct"
+    },
+    {
+        "t": "LRCX",
+        "sym": "LRCX",
+        "n": "Lam Research",
+        "grp": "Chips and equipment",
+        "p": "–",
+        "c": -1.0,
+        "note": "Fell 7.4% after hours on guidance"
+    },
+    {
+        "t": "AMAT",
+        "sym": "AMAT",
+        "n": "Applied Materials",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "KLAC",
+        "sym": "KLAC",
+        "n": "KLA",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "SNDK",
+        "sym": "SNDK",
+        "n": "Sandisk",
+        "grp": "Chips and equipment",
+        "p": "–"
+    },
+    {
+        "t": "MSFT",
+        "sym": "MSFT",
+        "n": "Microsoft",
+        "grp": "Hyperscalers and platforms",
+        "p": "–"
+    },
+    {
+        "t": "GOOGL",
+        "sym": "GOOGL",
+        "n": "Alphabet",
+        "grp": "Hyperscalers and platforms",
+        "p": "–"
+    },
+    {
+        "t": "AMZN",
+        "sym": "AMZN",
+        "n": "Amazon",
+        "grp": "Hyperscalers and platforms",
+        "p": "–"
+    },
+    {
+        "t": "META",
+        "sym": "META",
+        "n": "Meta Platforms",
+        "grp": "Hyperscalers and platforms",
+        "p": "$697.52",
+        "c": 0.47,
+        "note": "21 Oct close. Capex guide $135–145B",
+        "home": true
+    },
+    {
+        "t": "ORCL",
+        "sym": "ORCL",
+        "n": "Oracle",
+        "grp": "Hyperscalers and platforms",
+        "p": "–"
+    },
+    {
+        "t": "AAPL",
+        "sym": "AAPL",
+        "n": "Apple",
+        "grp": "Hyperscalers and platforms",
+        "p": "–"
+    },
+    {
+        "t": "TSLA",
+        "sym": "TSLA",
+        "n": "Tesla",
+        "grp": "Hyperscalers and platforms",
+        "p": "$386.47",
+        "c": 3.41,
+        "note": "21 Oct close. Q3 EPS beat, revenue a slight miss",
+        "home": true
+    },
+    {
+        "t": "SPCX",
+        "sym": "SPCX",
+        "n": "SpaceX",
+        "grp": "Hyperscalers and platforms",
+        "p": "$159.31",
+        "c": 7.79,
+        "note": "21 Oct close. Rallied on AI-led results",
+        "home": true
+    },
+    {
+        "t": "IBM",
+        "sym": "IBM",
+        "n": "IBM",
+        "grp": "Hyperscalers and platforms",
+        "p": "$251.49",
+        "c": 3.96,
+        "note": "21 Oct close. Revenue guide unchanged"
+    },
+    {
+        "t": "PLTR",
+        "sym": "PLTR",
+        "n": "Palantir",
+        "grp": "AI software and data",
+        "p": "–"
+    },
+    {
+        "t": "SNOW",
+        "sym": "SNOW",
+        "n": "Snowflake",
+        "grp": "AI software and data",
+        "p": "–"
+    },
+    {
+        "t": "NOW",
+        "sym": "NOW",
+        "n": "ServiceNow",
+        "grp": "AI software and data",
+        "p": "–"
+    },
+    {
+        "t": "CRM",
+        "sym": "CRM",
+        "n": "Salesforce",
+        "grp": "AI software and data",
+        "p": "–"
+    },
+    {
+        "t": "ADBE",
+        "sym": "ADBE",
+        "n": "Adobe",
+        "grp": "AI software and data",
+        "p": "–"
+    },
+    {
+        "t": "DDOG",
+        "sym": "DDOG",
+        "n": "Datadog",
+        "grp": "AI software and data",
+        "p": "–"
+    },
+    {
+        "t": "MDB",
+        "sym": "MDB",
+        "n": "MongoDB",
+        "grp": "AI software and data",
+        "p": "–"
+    },
+    {
+        "t": "AI",
+        "sym": "AI",
+        "n": "C3.ai",
+        "grp": "AI software and data",
+        "p": "–"
+    },
+    {
+        "t": "CRWV",
+        "sym": "CRWV",
+        "n": "CoreWeave",
+        "grp": "AI infrastructure and neoclouds",
+        "p": "–"
+    },
+    {
+        "t": "NBIS",
+        "sym": "NBIS",
+        "n": "Nebius",
+        "grp": "AI infrastructure and neoclouds",
+        "p": "–"
+    },
+    {
+        "t": "VRT",
+        "sym": "VRT",
+        "n": "Vertiv",
+        "grp": "AI infrastructure and neoclouds",
+        "p": "–"
+    },
+    {
+        "t": "DELL",
+        "sym": "DELL",
+        "n": "Dell Technologies",
+        "grp": "AI infrastructure and neoclouds",
+        "p": "–"
+    },
+    {
+        "t": "SMCI",
+        "sym": "SMCI",
+        "n": "Super Micro",
+        "grp": "AI infrastructure and neoclouds",
+        "p": "–"
+    },
+    {
+        "t": "ANET",
+        "sym": "ANET",
+        "n": "Arista Networks",
+        "grp": "AI infrastructure and neoclouds",
+        "p": "–"
+    },
+    {
+        "t": "CEG",
+        "sym": "CEG",
+        "n": "Constellation Energy",
+        "grp": "AI infrastructure and neoclouds",
+        "p": "–"
+    },
+    {
+        "t": "VST",
+        "sym": "VST",
+        "n": "Vistra",
+        "grp": "AI infrastructure and neoclouds",
+        "p": "–"
+    },
+    {
+        "t": "EQIX",
+        "sym": "EQIX",
+        "n": "Equinix",
+        "grp": "AI infrastructure and neoclouds",
+        "p": "–"
+    }
+],
     sources: [
       { t: "Yahoo Finance: stock market today, 21 Oct 2026", u: "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html" },
       { t: "CNT Trading: daily market, 21 Oct 2026", u: "https://cnttrading.substack.com/p/daily-market-2026-10-21" } ]
   },
-
-  /* Earnings: key findings per company. */
+  /* Earnings: key findings per company. Newest first; the page sorts by date. */
   earnings: [
+    {
+          "co": "Lockheed Martin",
+          "tk": "LMT",
+          "date": "2026-10-22",
+          "tag": "Defence",
+          "head": "Raised 2026 outlook on record backlog, with F-35 funding flagged as a risk.",
+          "stats": [
+                [
+                      "Sales",
+                      "$20.7B, +11%"
+                ],
+                [
+                      "Diluted EPS",
+                      "$7.97 vs $7.52 est. (from $6.95)"
+                ],
+                [
+                      "Backlog",
+                      "$292.0B, a record"
+                ],
+                [
+                      "Free cash flow",
+                      "$3.0B (from $3.3B)"
+                ],
+                [
+                      "2026 EPS guide",
+                      "$30.35–30.75 (prior $29.95–30.65)"
+                ],
+                [
+                      "2026 FCF guide",
+                      "$7.8–8.0B (prior $7.0–7.2B)"
+                ]
+          ],
+          "find": [
+                "Backlog rose from $193.6B at year-end, helped by a $52.5B PAC-3 MSE award.",
+                "Negotiations on F-35 Lots 20 and higher are still open. Costs on the Lot 20 advance contract began to exceed authorised funding in Q3, and Lockheed says results will be hurt in future periods without more funding.",
+                "Operating cash flow fell to $3.4B from $3.7B."
+          ],
+          "src": {
+                "t": "Lockheed Martin Q3 2026 release (SEC)",
+                "u": "https://www.sec.gov/Archives/edgar/data/0000936468/000162828026066780/ex991q32026.htm"
+          }
+    },
+    {
+          "co": "Honeywell",
+          "tk": "HON",
+          "date": "2026-10-22",
+          "tag": "Industrials",
+          "head": "Raised full-year outlook on 7% organic growth and a 370bp margin gain.",
+          "stats": [
+                [
+                      "Sales",
+                      "$4.99B, +1% (+7% organic)"
+                ],
+                [
+                      "Adjusted EPS",
+                      "$2.27 vs $2.17 est."
+                ],
+                [
+                      "Segment margin",
+                      "21.3%, +370bp"
+                ],
+                [
+                      "Free cash flow",
+                      "$688M"
+                ],
+                [
+                      "2026 adj. EPS guide",
+                      "$8.40–8.45 (prior $8.05–8.35)"
+                ],
+                [
+                      "2026 organic growth",
+                      "4–5% (prior 3–4%)"
+                ]
+          ],
+          "find": [
+                "Reported EPS from continuing operations was $2.40 against $2.99 a year ago, down 20%, while adjusted EPS rose 34%.",
+                "Operating cash flow fell 74% to $607M. Free cash flow rose 15% to $688M.",
+                "Fourth-quarter organic growth is expected at 5–6%."
+          ],
+          "src": {
+                "t": "Honeywell Technologies Q3 2026 release",
+                "u": "https://www.honeywell.com/us/en/news/press-releases/2026/10/honeywell-technologies-reports-third-quarter-results-raises-full-year-2026-outlook"
+          }
+    },
+    {
+          "co": "Procter & Gamble",
+          "tk": "PG",
+          "date": "2026-10-22",
+          "tag": "Consumer",
+          "head": "Core EPS beat, organic sales up 4%, guidance largely maintained.",
+          "stats": [
+                [
+                      "Net sales",
+                      "$23.3B, +4%"
+                ],
+                [
+                      "Organic sales",
+                      "+4%"
+                ],
+                [
+                      "Core EPS",
+                      "$2.00 vs $1.88 est."
+                ],
+                [
+                      "Diluted EPS",
+                      "$1.97"
+                ],
+                [
+                      "FY27 organic growth",
+                      "1–3%, maintained"
+                ],
+                [
+                      "FY27 all-in sales growth",
+                      "2–4%, raised"
+                ]
+          ],
+          "find": [
+                "Core EPS rose only 1%, from $1.99.",
+                "The all-in sales guide was raised because of the Thorne acquisition, effective 1 October 2026. Organic growth and EPS guidance were unchanged.",
+                "Free cash flow productivity is guided at 85–90%."
+          ],
+          "src": {
+                "t": "P&G fiscal 2027 Q1 release (SEC)",
+                "u": "https://www.sec.gov/Archives/edgar/data/0000080424/000008042426000250/fy2627q1jas8-kexhibit991.htm"
+          }
+    },
+    {
+          "co": "Blackstone",
+          "tk": "BX",
+          "date": "2026-10-22",
+          "tag": "Financials",
+          "head": "Distributable earnings of $1.32 a share and $63B of inflows.",
+          "stats": [
+                [
+                      "Distributable EPS",
+                      "$1.32 vs $1.29 est."
+                ],
+                [
+                      "GAAP net income",
+                      "$1.27B"
+                ],
+                [
+                      "Fee related earnings",
+                      "$1.57B ($1.26/share)"
+                ],
+                [
+                      "Total AUM",
+                      "$1.368T"
+                ],
+                [
+                      "Fee-earning AUM",
+                      "$989.7B"
+                ],
+                [
+                      "Inflows",
+                      "$63.3B"
+                ],
+                [
+                      "Realizations",
+                      "$33.1B"
+                ]
+          ],
+          "find": [
+                "Inflows were almost twice realizations, so assets are growing faster than they are being returned.",
+                "Total AUM is now above $1.36 trillion."
+          ],
+          "src": {
+                "t": "Blackstone Q3 2026 release (SEC)",
+                "u": "https://www.sec.gov/Archives/edgar/data/0001393818/000119312526428297/d160590dex991.htm"
+          }
+    },
+    {
+          "co": "Texas Instruments",
+          "tk": "TXN",
+          "date": "2026-10-21",
+          "tag": "Semis",
+          "head": "Revenue up 28% and EPS up 77%, with a flat Q4 midpoint.",
+          "stats": [
+                [
+                      "Revenue",
+                      "$6.06B, +28%"
+                ],
+                [
+                      "Diluted EPS",
+                      "$2.62 vs $2.42 est."
+                ],
+                [
+                      "Analog revenue",
+                      "$4.91B, +32%"
+                ],
+                [
+                      "Embedded revenue",
+                      "$858M, +21%"
+                ],
+                [
+                      "Free cash flow",
+                      "$2.96B"
+                ],
+                [
+                      "Q4 guide",
+                      "Rev. $5.80–6.30B, EPS $2.45–2.79"
+                ]
+          ],
+          "find": [
+                "The Q4 revenue midpoint of $6.05B is about flat on Q3, so the guide implies growth is levelling off.",
+                "Trailing-12-month free cash flow is $8.4B.",
+                "I could not confirm the share-price reaction from the sources I could read."
+          ],
+          "src": {
+                "t": "Texas Instruments Q3 2026 release (SEC)",
+                "u": "https://www.sec.gov/Archives/edgar/data/0000097476/000009747626000165/q32026txnex99-eredgar.htm"
+          }
+    },
+    {
+          "co": "AT&T",
+          "tk": "T",
+          "date": "2026-10-21",
+          "tag": "Telecom",
+          "head": "Raised EPS outlook on fibre and wireless growth.",
+          "stats": [
+                [
+                      "Revenue",
+                      "$32.3B, +5.3%"
+                ],
+                [
+                      "Adjusted EPS",
+                      "$0.65 vs $0.60 est. (from $0.54)"
+                ],
+                [
+                      "Postpaid phone net adds",
+                      "379K"
+                ],
+                [
+                      "Fibre net adds",
+                      "442K"
+                ],
+                [
+                      "Free cash flow",
+                      "$5.0B"
+                ],
+                [
+                      "2026 adj. EPS",
+                      "~$2.40, raised"
+                ]
+          ],
+          "find": [
+                "GAAP diluted EPS from continuing operations was $0.13, well below adjusted EPS.",
+                "Guidance: capex $23–24B, free cash flow of $18B or more, about $10B of buybacks in 2026.",
+                "The annualised dividend is maintained at $1.11 a share."
+          ],
+          "src": {
+                "t": "AT&T Q3 2026 results",
+                "u": "https://about.att.com/story/2026/3q-earnings.html"
+          }
+    },
+    {
+          "co": "Also reported 21 Oct",
+          "tk": "COF · DHR · TMO",
+          "date": "2026-10-21",
+          "tag": "Recap",
+          "head": "Capital One, Danaher and Thermo Fisher all beat consensus EPS.",
+          "stats": [
+                [
+                      "Capital One",
+                      "Adj. EPS $6.69 vs $5.45"
+                ],
+                [
+                      "Danaher",
+                      "Adj. EPS $2.11 vs $1.92"
+                ],
+                [
+                      "Thermo Fisher",
+                      "Adj. EPS $6.68 vs $6.40"
+                ],
+                [
+                      "Bank OZK",
+                      "Adj. EPS $1.50 vs $1.45"
+                ]
+          ],
+          "find": [
+                "Consensus figures are Zacks estimates as quoted by Yahoo Finance.",
+                "Yahoo's recap shows share gains for each, though its ticker bar shows different intraday moves, so I have not quoted a share reaction."
+          ],
+          "src": {
+                "t": "Yahoo Finance: company news, 22 Oct 2026",
+                "u": "https://finance.yahoo.com/markets/stocks/articles/company-news-oct-22-2026-094700101.html"
+          }
+    },
+    {
+          "co": "RTX",
+          "tk": "RTX",
+          "date": "2026-10-20",
+          "tag": "Aerospace",
+          "head": "Raised full-year outlook across the board; free cash flow halved in the quarter.",
+          "stats": [
+                [
+                      "Sales",
+                      "$25.0B, +11% (+12% organic)"
+                ],
+                [
+                      "Adjusted EPS",
+                      "$2.26 vs $1.78 est."
+                ],
+                [
+                      "Free cash flow",
+                      "$2.1B (from $4.0B)"
+                ],
+                [
+                      "Backlog",
+                      "$340B"
+                ],
+                [
+                      "2026 adj. EPS guide",
+                      "$7.65–7.75 (prior $7.10–7.25)"
+                ],
+                [
+                      "2026 sales guide",
+                      "$97.0–97.5B (prior $95–96B)"
+                ]
+          ],
+          "find": [
+                "Adjusted EPS includes $0.25 from IEEPA cost recovery. Without it, EPS would be about $2.01, which still beats the $1.78 estimate (my arithmetic).",
+                "Free cash flow fell 47%. Backlog is split $176B commercial and $164B defence."
+          ],
+          "src": {
+                "t": "RTX Q3 2026 results",
+                "u": "https://www.rtx.com/news/news-center/2026/10/20/rtx-reports-q3-2026-results"
+          }
+    },
+    {
+          "co": "GE Aerospace",
+          "tk": "GE",
+          "date": "2026-10-20",
+          "tag": "Aerospace",
+          "head": "Orders up 49% as engines and services drive a broad guidance raise.",
+          "stats": [
+                [
+                      "Orders",
+                      "$19.0B, +49%"
+                ],
+                [
+                      "Adjusted revenue",
+                      "$13.3B, +18%"
+                ],
+                [
+                      "Adjusted EPS",
+                      "$2.25 vs $2.00 est., +36%"
+                ],
+                [
+                      "Operating margin",
+                      "22.5%, +220bp"
+                ],
+                [
+                      "Free cash flow",
+                      "$2.0B, −14%"
+                ]
+          ],
+          "find": [
+                "Commercial Engines and Services: orders $15.3B (+58%), revenue $10.3B (+21%). Its 2026 operating profit guide was raised to $10.5–10.6B from $10.25–10.35B.",
+                "Defence and Propulsion guidance is unchanged.",
+                "Free cash flow fell 14% even as profit grew."
+          ],
+          "src": {
+                "t": "GE Aerospace Q3 2026 results",
+                "u": "https://www.geaerospace.com/news/press-releases/ge-aerospace-announces-third-quarter-2026-results"
+          }
+    },
+    {
+          "co": "General Motors",
+          "tk": "GM",
+          "date": "2026-10-20",
+          "tag": "Autos",
+          "head": "Beat on adjusted EPS, higher free cash flow guide and a new $20B buyback.",
+          "stats": [
+                [
+                      "Revenue",
+                      "$50.0B, +2.9%"
+                ],
+                [
+                      "Adjusted EPS",
+                      "$3.70 vs $3.69 est."
+                ],
+                [
+                      "EBIT-adjusted",
+                      "$4.1B, 8.2% margin"
+                ],
+                [
+                      "Adj. auto free cash flow",
+                      "$5.9B, +40%"
+                ],
+                [
+                      "2026 adj. EPS guide",
+                      "$12.75–13.75 (prior $12.00–14.00)"
+                ],
+                [
+                      "2026 auto FCF guide",
+                      "$11.5–12.5B (prior $9.5–11.5B)"
+                ]
+          ],
+          "find": [
+                "North America EBIT-adjusted was $3.59B at an 8.7% margin, up 2.5 points. International fell 88% to $28M.",
+                "The EPS and EBIT guidance ranges were narrowed. The free cash flow range was lifted.",
+                "A new $20B multi-year buyback was authorised, after the $6B programme was completed."
+          ],
+          "src": {
+                "t": "GM Q3 2026 release (SEC)",
+                "u": "https://www.sec.gov/Archives/edgar/data/0001467858/000146785826000056/gmq32026pressreleaseandfin.htm"
+          }
+    },
     { co: "Meta Platforms", tk: "META", date: "2026-10-21", tag: "AI spending",
       head: "Record revenue, but the AI bill now exceeds free cash flow.",
       stats: [["Revenue", "~$64B vs $63.3B expected"], ["GAAP EPS", "$3.83 vs $3.56 expected"], ["EPS ex legal charge", "$7.40"], ["Q3 capex", "$34.9B"], ["Q3 free cash flow", "−$2.1B"], ["FY capex guide", "$135–145B (low end raised)"]],
@@ -319,14 +1364,15 @@ const SITE = {
         "The stock sold off after hours because forward guidance fell short of elevated expectations, not because of a weak quarter.",
         "It follows a session where the chip index rose 2.0%, so expectations into the print were high." ],
       src: { t: "CNT Trading: daily market", u: "https://cnttrading.substack.com/p/daily-market-2026-10-21" } }
+  
   ],
 
   calendar: {
-    note: "Dates and EPS estimates are tentative per Kiplinger.",
+    note: "Dates are per Kiplinger and may be tentative. Companies below that have already reported are not yet summarised here.",
     days: [
-      { d: "Thu 22 Oct, before open", items: "Procter & Gamble ($1.88), Honeywell ($2.17), Comcast ($0.99), Lockheed Martin ($7.52), Union Pacific ($3.47), Blackstone ($1.29), Spotify ($2.81), Valero ($20.90)" },
-      { d: "Thu 22 Oct, after close", items: "Newmont ($2.06), Western Digital ($4.08), Deckers ($1.79), Bloom Energy ($0.69), VeriSign ($2.46)" },
-      { d: "Fri 23 Oct, before open", items: "American Express ($4.58), SLB ($0.62)" }
+      { d: "Thu 22 Oct, before open (reported, not yet summarised)", items: "Comcast, Union Pacific, Spotify, Valero, Dow, Nokia, CBRE, Dover, Roper, Snap-on" },
+      { d: "Thu 22 Oct, after close", items: "Newmont ($2.06 est.), Western Digital ($4.08), Deckers ($1.79), Bloom Energy ($0.69), VeriSign ($2.46)" },
+      { d: "Fri 23 Oct, before open", items: "American Express ($4.58 est.), SLB ($0.62)" }
     ],
     src: { t: "Kiplinger: earnings calendar, 19–23 Oct", u: "https://www.kiplinger.com/investing/stocks/17494/next-week-earnings-calendar-stocks" }
   },
@@ -335,6 +1381,9 @@ const SITE = {
     "I am Rudraj Mehta, a Penultimate Year Finance Student at University of Warwick. Having completed internships in equity research and banking, participated in hackathons, case competitions and being a Cambridge Published Economics Author, I have built this site to move one step further from static news watching to a more dynamic environment, leveraging cause + effect within daily markets news."
   ],
 
+  aboutLinks: [
+    { t: "LinkedIn: linkedin.com/in/rudraj-mehta7", u: "https://www.linkedin.com/in/rudraj-mehta7" }
+  ],
   how: [
     "Markets: indices, yields, gold, oil and crypto, with the source and date on every number.",
     "AI stocks: the mega-cap and chip names that drive the index, with day and after-hours moves.",
@@ -476,18 +1525,33 @@ function noteItem(n) {
   return '<li><div class="meta"><span class="label">' + fmtDate(n.date) + '</span><span class="tag">' + n.tags.map(esc).join(" · ") +
     '</span><span class="label">' + readMin(n) + '</span></div><h3><a href="#article-' + n.id + '">' + esc(n.title) + "</a></h3><p>" + esc(n.dek) + "</p></li>";
 }
+function rowTr(r) {
+  return '<tr><td class="n">' + esc(r.n) + (r.note ? "<small>" + esc(r.note) + "</small>" : "") +
+    '</td><td class="r lv">' + esc(r.v) + '</td><td class="r">' + (r.v === "–" && r.c == null ? "" : chg(r.c)) + "</td></tr>";
+}
 function levelsPanel() {
-  const rows = SITE.snapshot.groups.map(g =>
-    '<tr><th colspan="3">' + esc(g.name) + "</th></tr>" +
-    g.rows.map(r => '<tr><td class="n">' + esc(r.n) + (r.note ? "<small>" + esc(r.note) + "</small>" : "") +
-      '</td><td class="r lv">' + esc(r.v) + '</td><td class="r">' + chg(r.c) + "</td></tr>").join("")).join("");
+  const rows = SITE.snapshot.groups.map(g => {
+    const rs = g.rows.filter(r => !r.more); if (!rs.length) return "";
+    return '<tr><th colspan="3">' + esc(g.name) + "</th></tr>" + rs.map(rowTr).join("");
+  }).join("");
   return '<div class="stamp"><span class="label">As of ' + esc(SITE.snapshot.asOf) + '</span></div><div class="panel scroll"><table><tbody>' + rows + "</tbody></table></div>";
 }
-function aiPanel(limit) {
-  const rows = SITE.ai.rows.slice(0, limit || 99).map(w => '<tr><td class="n"><b class="num">' + esc(w.t) + "</b> " + esc(w.n) +
-    '<small>' + esc(w.note || "") + (w.ah ? (w.note ? " · " : "") + esc(w.ah) : "") + '</small></td><td class="r lv">' + esc(w.p) + '</td><td class="r">' + chg(w.c) + "</td></tr>").join("");
+function groupPanel(g) {
+  return '<div class="panel scroll"><table><tbody><tr><th colspan="3">' + esc(g.name) + "</th></tr>" + g.rows.map(rowTr).join("") + "</tbody></table></div>";
+}
+function aiTr(w) {
+  return '<tr><td class="n"><b class="num">' + esc(w.t) + "</b> " + esc(w.n) +
+    '<small>' + esc(w.note || "") + (w.ah ? (w.note ? " · " : "") + esc(w.ah) : "") + '</small></td><td class="r lv">' + esc(w.p) + '</td><td class="r">' + (w.p === "–" && w.c == null ? "" : chg(w.c)) + "</td></tr>";
+}
+function aiPanel() {
+  const rows = SITE.ai.rows.filter(w => w.home).map(aiTr).join("");
   return '<div class="panel scroll"><table><tbody><tr><th colspan="3">AI and mega-cap tech · ' + esc(SITE.ai.asOf) + "</th></tr>" + rows + "</tbody></table></div>";
 }
+function aiGroupPanel(name) {
+  const rows = SITE.ai.rows.filter(w => w.grp === name).map(aiTr).join("");
+  return '<div class="panel scroll"><table><tbody><tr><th colspan="3">' + esc(name) + "</th></tr>" + rows + "</tbody></table></div>";
+}
+function earnSorted() { return SITE.earnings.slice().sort((a, b) => b.date.localeCompare(a.date)); }
 function earnBlock(e, compact) {
   return '<article class="earn"><div class="meta"><span class="label">' + fmtDate(e.date) + '</span><span class="tag">' + esc(e.tag) + '</span></div>' +
     '<h3><span class="num tk">' + esc(e.tk) + "</span> " + esc(e.co) + "</h3><p class=\"ehead\">" + esc(e.head) + "</p>" +
@@ -505,21 +1569,21 @@ function headlinesBlock() {
 function pageHome() {
   return headlinesBlock() + '<div class="cols"><section><div class="sec-h"><h2>Latest articles by Rudraj</h2><a href="#articles">All articles</a></div><ul class="nl">' +
     notes.slice(0, 3).map(noteItem).join("") +
-    '</ul><div class="sec-h" style="margin-top:34px"><h2>Earnings so far</h2><a href="#earnings">Key findings</a></div><div class="earn-list">' +
-    SITE.earnings.slice(0, 4).map(e => earnBlock(e, true)).join("") + "</div></section>" +
+    '</ul><div class="sec-h" style="margin-top:34px"><h2>Earnings this week</h2><a href="#earnings">Key findings</a></div><div class="earn-list">' +
+    earnSorted().slice(0, 4).map(e => earnBlock(e, true)).join("") + "</div></section>" +
     '<aside><div class="sec-h" style="margin-bottom:12px"><h2>Levels</h2><a href="#markets">All</a></div>' + levelsPanel() +
-    '<div class="sec-h" style="margin:26px 0 12px"><h2>AI stocks</h2><a href="#ai">All</a></div>' + aiPanel(5) + "</aside></div>";
+    '<div class="sec-h" style="margin:26px 0 12px"><h2>AI stocks</h2><a href="#ai">All</a></div>' + aiPanel() + "</aside></div>";
 }
 function pageMarkets() {
-  return '<h1 class="page-h">Markets</h1><p class="lede">' + esc(SITE.snapshot.caveat) + '</p><div style="max-width:560px">' + levelsPanel() + "</div>" + srcList(SITE.snapshot.sources);
+  return '<h1 class="page-h">Markets</h1><p class="lede">' + esc(SITE.snapshot.caveat) + '</p><div class="stamp"><span class="label">As of ' + esc(SITE.snapshot.asOf) + '</span></div><div class="pgrid">' + SITE.snapshot.groups.map(groupPanel).join("") + "</div>" + srcList(SITE.snapshot.sources);
 }
 function pageAI() {
-  return '<h1 class="page-h">AI stocks</h1><p class="lede">' + esc(SITE.ai.summary) + '</p><div style="max-width:620px">' + aiPanel() + "</div>" + srcList(SITE.ai.sources);
+  return '<h1 class="page-h">AI stocks</h1><p class="lede">' + esc(SITE.ai.summary) + '</p><div class="stamp"><span class="label">As of ' + esc(SITE.ai.asOf) + '</span></div><div class="pgrid">' + SITE.ai.groups.map(aiGroupPanel).join("") + "</div>" + srcList(SITE.ai.sources);
 }
 function pageEarnings() {
   const cal = SITE.calendar;
-  return '<h1 class="page-h">Earnings</h1><p class="lede">Key findings from the reports that moved the market, and what is still to come this week.</p><div class="earn-list">' +
-    SITE.earnings.map(e => earnBlock(e, false)).join("") + '</div><div class="sec-h" style="margin-top:34px"><h2>Still to report</h2></div><p class="label" style="margin:10px 0">' + esc(cal.note) + "</p>" +
+  return '<h1 class="page-h">Earnings</h1><p class="lede">Key findings from the reports so far this week (20–22 Oct), with consensus where I have it, and what is still to come.</p><div class="earn-list">' +
+    earnSorted().map(e => earnBlock(e, false)).join("") + '</div><div class="sec-h" style="margin-top:34px"><h2>Still to report</h2></div><p class="label" style="margin:10px 0">' + esc(cal.note) + "</p>" +
     cal.days.map(d => '<div class="cal"><b class="label">' + esc(d.d) + "</b><p>" + esc(d.items) + "</p></div>").join("") + srcList([cal.src]);
 }
 function pageNotes() {
@@ -540,6 +1604,7 @@ function pageNote(id) {
 }
 function pageAbout() {
   return '<div class="about"><h1 class="page-h">About</h1>' + SITE.about.map(p => "<p>" + esc(p) + "</p>").join("") +
+    '<p class="links">' + (SITE.aboutLinks || []).map(l => '<a href="' + esc(l.u) + '" target="_blank" rel="noopener">' + esc(l.t) + " ↗</a>").join(" ") + "</p>" +
     '<div class="sec-h" style="margin-top:28px"><h2>What you will find here</h2></div><ul style="margin-top:14px">' + SITE.how.map(p => "<li>" + esc(p) + "</li>").join("") + "</ul></div>";
 }
 
@@ -592,9 +1657,10 @@ render(route());
 /* ---- Live quotes: /api/quotes (Yahoo Finance, delayed). Falls back silently to the figures above. ---- */
 function fmtNum(sym, p) {
   if (/^\^(TNX|FVX|TYX)$/.test(sym)) return p.toFixed(2) + "%";
+  if (/=X$/.test(sym)) return p.toFixed(p < 20 ? 4 : 2);
   const d = p >= 1000 ? 0 : 2;
-  const s = p.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
-  return /^(GC=F|CL=F|BZ=F|BTC-USD)$/.test(sym) || /^[A-Z]{2,5}$/.test(sym) ? "$" + s : s;
+  const t = p.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  return /^\^|^DX-Y|\.SS$/.test(sym) ? t : "$" + t;
 }
 function applyQuotes(q) {
   let n = 0;
@@ -619,7 +1685,7 @@ async function loadLive() {
     const hm = new Date(j.updated).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
     SITE.snapshot.asOf = "Live, delayed · updated " + hm;
     SITE.ai.asOf = "Live, delayed · " + hm;
-    SITE.snapshot.caveat = "Live quotes from Yahoo Finance, delayed by up to 15 minutes. 2-year yield is from the 21 Oct close.";
+    SITE.snapshot.caveat = "Live quotes from Yahoo Finance, delayed by up to 15 minutes. The 2-year yield is from the 21 Oct close. Rows that show a dash were not returned by the data feed.";
     renderRail(); render(route());
   } catch (e) { /* keep static figures */ }
 }
