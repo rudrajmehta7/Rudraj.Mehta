@@ -212,7 +212,7 @@ footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1
    ====================================================================== */
 const SITE = {
   name: "Apex",
-  tagline: "Daily Market Spread, by Rudraj Mehta",
+  tagline: "Daily Market Spread | Financial Markets Simplified | By Rudraj Mehta",
   sample: false,
   disclaimer: "For educational and informational purposes only. Not investment advice. Views are my own. Figures come from the linked public sources and may differ slightly between them.",
 
@@ -1675,7 +1675,7 @@ $("#theme").addEventListener("click", () => {
 try { const t = localStorage.getItem("rr-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
 
 $("#mark").textContent = SITE.name;
-$("#today").textContent = SITE.tagline + " · " + new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+$("#today").textContent = SITE.tagline;
 $("#disc").textContent = SITE.disclaimer;
 $("#copy").textContent = "© " + new Date().getFullYear() + " Rudraj Mehta";
 renderRail();
