@@ -205,20 +205,20 @@ const SITE = {
     rail: ["S&P 500", "Dow Jones", "Nasdaq Composite", "US 10-year yield", "Gold", "Brent crude"],
     groups: [
       { name: "Equities", rows: [
-        { n: "S&P 500", v: "–", c: 0.5, note: "Third straight gain. Sources give +0.46% to +0.58%" },
-        { n: "Dow Jones", v: "52,856", c: 0.69 },
-        { n: "Nasdaq Composite", v: "–", c: 0.94, note: "Led by chips and SpaceX" },
-        { n: "VIX", v: "16.68", c: -3.64 } ]},
+        { n: "S&P 500", v: "–", sym: "^GSPC", c: 0.5, note: "Third straight gain. Sources give +0.46% to +0.58%" },
+        { n: "Dow Jones", v: "52,856", sym: "^DJI", c: 0.69 },
+        { n: "Nasdaq Composite", v: "–", sym: "^IXIC", c: 0.94, note: "Led by chips and SpaceX" },
+        { n: "VIX", v: "16.68", sym: "^VIX", c: -3.64 } ]},
       { name: "Rates", rows: [
-        { n: "US 10-year yield", v: "5.15%", note: "Up 3bp on the day" },
-        { n: "US 5-year yield", v: "4.95%" },
+        { n: "US 10-year yield", v: "5.15%", sym: "^TNX", note: "Up 3bp on the day" },
+        { n: "US 5-year yield", v: "4.95%", sym: "^FVX" },
         { n: "US 2-year yield", v: "4.81%" } ]},
       { name: "Commodities", rows: [
-        { n: "Gold", v: "$4,118", c: -0.76, note: "Down 5.2% on a year ago. Fed decision due next week" },
-        { n: "WTI crude (Dec)", v: "$98.44", c: 1.33 },
-        { n: "Brent crude", v: "~$110.7", note: "8am ET. Spiked above $110 after a drone strike on a Saudi Aramco field" } ]},
+        { n: "Gold", v: "$4,118", sym: "GC=F", c: -0.76, note: "Down 5.2% on a year ago. Fed decision due next week" },
+        { n: "WTI crude (Dec)", v: "$98.44", sym: "CL=F", c: 1.33 },
+        { n: "Brent crude", v: "~$110.7", sym: "BZ=F", note: "8am ET. Spiked above $110 after a drone strike on a Saudi Aramco field" } ]},
       { name: "Crypto", rows: [
-        { n: "Bitcoin", v: "$82,613", c: -0.03 } ]}
+        { n: "Bitcoin", v: "$82,613", sym: "BTC-USD", c: -0.03 } ]}
     ],
     sources: [
       { t: "Yahoo Finance: stock market today, 21 Oct 2026", u: "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html" },
@@ -233,13 +233,13 @@ const SITE = {
     asOf: "21 Oct 2026",
     summary: "Chipmakers led the rebound: the chip index rose 2.0%. Nasdaq 100 futures then fell about 1.5% overnight as investors weighed Meta's spending against its cash flow and Lam Research's guidance.",
     rows: [
-      { t: "SPCX", n: "SpaceX", p: "$159.31", c: 7.79, note: "Rallied on AI-led results" },
-      { t: "TSLA", n: "Tesla", p: "$386.47", c: 3.41, note: "Q3 EPS beat; revenue a slight miss" },
-      { t: "META", n: "Meta Platforms", p: "$697.52", c: 0.47, ah: "Up after hours (sources differ: +2% to +5%)", note: "Capex guide $135–145B" },
-      { t: "NVDA", n: "Nvidia", p: "–", c: 1.5, note: "Up more than 1.5%. Close not confirmed" },
-      { t: "AMD", n: "AMD", p: "–", c: 2.0, note: "Up about 2%. Close not confirmed" },
-      { t: "IBM", n: "IBM", p: "$251.49", c: 3.96, ah: "−5.1% after hours", note: "Revenue guide unchanged" },
-      { t: "LRCX", n: "Lam Research", p: "–", c: -1.0, ah: "−7.4% after hours to $241.57", note: "Guidance short of hopes" }
+      { t: "SPCX", sym: "SPCX", n: "SpaceX", p: "$159.31", c: 7.79, note: "Rallied on AI-led results" },
+      { t: "TSLA", sym: "TSLA", n: "Tesla", p: "$386.47", c: 3.41, note: "Q3 EPS beat; revenue a slight miss" },
+      { t: "META", sym: "META", n: "Meta Platforms", p: "$697.52", c: 0.47, ah: "Up after hours (sources differ: +2% to +5%)", note: "Capex guide $135–145B" },
+      { t: "NVDA", sym: "NVDA", n: "Nvidia", p: "–", c: 1.5, note: "Up more than 1.5%. Close not confirmed" },
+      { t: "AMD", sym: "AMD", n: "AMD", p: "–", c: 2.0, note: "Up about 2%. Close not confirmed" },
+      { t: "IBM", sym: "IBM", n: "IBM", p: "$251.49", c: 3.96, ah: "−5.1% after hours", note: "Revenue guide unchanged" },
+      { t: "LRCX", sym: "LRCX", n: "Lam Research", p: "–", c: -1.0, ah: "−7.4% after hours to $241.57", note: "Guidance short of hopes" }
     ],
     sources: [
       { t: "Yahoo Finance: stock market today, 21 Oct 2026", u: "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html" },
@@ -505,6 +505,43 @@ $("#disc").textContent = SITE.disclaimer;
 $("#copy").textContent = "© " + new Date().getFullYear() + " " + SITE.name;
 renderRail();
 render(route());
+
+/* ---- Live quotes: /api/quotes (Yahoo Finance, delayed). Falls back silently to the figures above. ---- */
+function fmtNum(sym, p) {
+  if (/^\^(TNX|FVX|TYX)$/.test(sym)) return p.toFixed(2) + "%";
+  const d = p >= 1000 ? 0 : 2;
+  const s = p.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  return /^(GC=F|CL=F|BZ=F|BTC-USD)$/.test(sym) || /^[A-Z]{2,5}$/.test(sym) ? "$" + s : s;
+}
+function applyQuotes(q) {
+  let n = 0;
+  const touch = r => {
+    const x = r.sym && q[r.sym]; if (!x) return;
+    const key = r.p !== undefined || r.t ? "p" : "v";
+    r[key] = fmtNum(r.sym, x.p);
+    r.c = /^\^(TNX|FVX|TYX)$/.test(r.sym) ? null : x.c;
+    delete r.note; delete r.ah; n++;
+  };
+  SITE.snapshot.groups.forEach(g => g.rows.forEach(touch));
+  SITE.ai.rows.forEach(touch);
+  return n;
+}
+async function loadLive() {
+  try {
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 8000);
+    const r = await fetch("/api/quotes", { signal: ctl.signal }); clearTimeout(timer);
+    if (!r.ok) return;
+    const j = await r.json();
+    if (!applyQuotes(j.quotes || {})) return;
+    const hm = new Date(j.updated).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    SITE.snapshot.asOf = "Live, delayed · updated " + hm;
+    SITE.ai.asOf = "Live, delayed · " + hm;
+    SITE.snapshot.caveat = "Live quotes from Yahoo Finance, delayed by up to 15 minutes. 2-year yield is from the 21 Oct close.";
+    renderRail(); render(route());
+  } catch (e) { /* keep static figures */ }
+}
+loadLive();
+setInterval(loadLive, 120000);
 </script>
 
 </body>
