@@ -1381,6 +1381,8 @@ const SITE = {
     "I am Rudraj Mehta, a Penultimate Year Finance Student at University of Warwick. Having completed internships in equity research and banking, participated in hackathons, case competitions and being a Cambridge Published Economics Author, I have built this site to move one step further from static news watching to a more dynamic environment, leveraging cause + effect within daily markets news."
   ],
 
+  /* Filter buttons on the Articles page. Fixed list: new article tags do not add buttons. Edit here to add or remove one. */
+  topics: ["Geopolitics", "AI", "Commodities", "Equities", "Earnings", "Rates", "Macro", "Markets", "India"],
   aboutLinks: [
     { t: "LinkedIn: linkedin.com/in/rudraj-mehta7", u: "https://www.linkedin.com/in/rudraj-mehta7" }
   ],
@@ -1703,7 +1705,7 @@ function pageEarnings() {
     cal.days.map(d => '<div class="cal"><b class="label">' + esc(d.d) + "</b><p>" + esc(d.items) + "</p></div>").join("") + srcList([cal.src]);
 }
 function pageNotes() {
-  const tags = ["All"].concat(Array.from(new Set(notes.flatMap(n => n.tags))));
+  const tags = ["All"].concat(SITE.topics);
   const list = notes.filter(n => activeTag === "All" || n.tags.indexOf(activeTag) > -1);
   return '<h1 class="page-h">Articles</h1><p class="lede">Short, dated, sourced pieces on the markets and topics I follow, each linking cause to effect.</p><div class="filters" role="group" aria-label="Filter by topic">' +
     tags.map(t => '<button type="button" data-tag="' + esc(t) + '" aria-pressed="' + (t === activeTag) + '">' + esc(t) + "</button>").join("") +
