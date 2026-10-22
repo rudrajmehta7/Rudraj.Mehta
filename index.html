@@ -451,7 +451,7 @@ function headlinesBlock() {
     '</ul><p class="label hnote">' + esc(h.note) + "</p></section>";
 }
 function pageHome() {
-  return headlinesBlock() + '<div class="cols"><section><div class="sec-h"><h2>Latest articles</h2><a href="#articles">All articles</a></div><ul class="nl">' +
+  return headlinesBlock() + '<div class="cols"><section><div class="sec-h"><h2>Latest articles by Rudraj</h2><a href="#articles">All articles</a></div><ul class="nl">' +
     notes.slice(0, 3).map(noteItem).join("") +
     '</ul><div class="sec-h" style="margin-top:34px"><h2>Earnings so far</h2><a href="#earnings">Key findings</a></div><div class="earn-list">' +
     SITE.earnings.slice(0, 4).map(e => earnBlock(e, true)).join("") + "</div></section>" +
