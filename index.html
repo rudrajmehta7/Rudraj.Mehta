@@ -174,7 +174,7 @@ footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1
       <a href="#markets" data-route="markets">Markets</a>
       <a href="#ai" data-route="ai">AI stocks</a>
       <a href="#earnings" data-route="earnings">Earnings</a>
-      <a href="#notes" data-route="notes">Notes</a>
+      <a href="#articles" data-route="articles">Articles</a>
       <a href="#about" data-route="about">About</a>
       <button class="theme" id="theme" type="button" aria-label="Switch light and dark theme">Theme</button>
     </nav>
@@ -307,7 +307,7 @@ const SITE = {
     "Markets: indices, yields, gold, oil and crypto, with the source and date on every number.",
     "AI stocks: the mega-cap and chip names that drive the index, with day and after-hours moves.",
     "Earnings: key findings from each report, and the week's calendar.",
-    "Notes: short pieces of about two pages with a takeaway, the facts, my view and what would change it."
+    "Articles: short pieces of about two pages with a takeaway, the facts, my view and what would change it."
   ],
 
   notes: [
@@ -397,7 +397,7 @@ function renderRail() {
 }
 function noteItem(n) {
   return '<li><div class="meta"><span class="label">' + fmtDate(n.date) + '</span><span class="tag">' + n.tags.map(esc).join(" · ") +
-    '</span><span class="label">' + readMin(n) + '</span></div><h3><a href="#note-' + n.id + '">' + esc(n.title) + "</a></h3><p>" + esc(n.dek) + "</p></li>";
+    '</span><span class="label">' + readMin(n) + '</span></div><h3><a href="#article-' + n.id + '">' + esc(n.title) + "</a></h3><p>" + esc(n.dek) + "</p></li>";
 }
 function levelsPanel() {
   const rows = SITE.snapshot.groups.map(g =>
@@ -420,7 +420,7 @@ function earnBlock(e, compact) {
 }
 
 function pageHome() {
-  return '<div class="cols"><section><div class="sec-h"><h2>Latest notes</h2><a href="#notes">All notes</a></div><ul class="nl">' +
+  return '<div class="cols"><section><div class="sec-h"><h2>Latest articles</h2><a href="#articles">All articles</a></div><ul class="nl">' +
     notes.slice(0, 3).map(noteItem).join("") +
     '</ul><div class="sec-h" style="margin-top:34px"><h2>Earnings so far</h2><a href="#earnings">Key findings</a></div><div class="earn-list">' +
     SITE.earnings.slice(0, 4).map(e => earnBlock(e, true)).join("") + "</div></section>" +
@@ -442,18 +442,18 @@ function pageEarnings() {
 function pageNotes() {
   const tags = ["All"].concat(Array.from(new Set(notes.flatMap(n => n.tags))));
   const list = notes.filter(n => activeTag === "All" || n.tags.indexOf(activeTag) > -1);
-  return '<h1 class="page-h">Notes</h1><p class="lede">Short, dated, sourced. Each one ends with what would change my mind.</p><div class="filters" role="group" aria-label="Filter by topic">' +
+  return '<h1 class="page-h">Articles</h1><p class="lede">Short, dated, sourced pieces on the markets and topics I follow, each linking cause to effect.</p><div class="filters" role="group" aria-label="Filter by topic">' +
     tags.map(t => '<button type="button" data-tag="' + esc(t) + '" aria-pressed="' + (t === activeTag) + '">' + esc(t) + "</button>").join("") +
     '</div><ul class="nl">' + list.map(noteItem).join("") + "</ul>";
 }
 function pageNote(id) {
   const i = notes.findIndex(n => n.id === id); if (i < 0) return null;
   const n = notes[i], newer = notes[i - 1], older = notes[i + 1];
-  return '<article class="art"><a class="back" href="#notes">← All notes</a><h1>' + esc(n.title) + '</h1><p class="dek">' + esc(n.dek) +
+  return '<article class="art"><a class="back" href="#articles">← All articles</a><h1>' + esc(n.title) + '</h1><p class="dek">' + esc(n.dek) +
     '</p><div class="byline"><span class="label">' + fmtDate(n.date) + '</span><span class="tag">' + n.tags.map(esc).join(" · ") + '</span><span class="label">' + readMin(n) +
     "</span></div>" + n.body + (n.sources && n.sources.length ? srcList(n.sources) : "") +
-    '<div class="pn">' + (newer ? '<a href="#note-' + newer.id + '"><span class="label">Newer</span><b>' + esc(newer.title) + "</b></a>" : "<span></span>") +
-    (older ? '<a href="#note-' + older.id + '" style="text-align:right"><span class="label">Older</span><b>' + esc(older.title) + "</b></a>" : "") + "</div></article>";
+    '<div class="pn">' + (newer ? '<a href="#article-' + newer.id + '"><span class="label">Newer</span><b>' + esc(newer.title) + "</b></a>" : "<span></span>") +
+    (older ? '<a href="#article-' + older.id + '" style="text-align:right"><span class="label">Older</span><b>' + esc(older.title) + "</b></a>" : "") + "</div></article>";
 }
 function pageAbout() {
   return '<div class="about"><h1 class="page-h">About</h1>' + SITE.about.map(p => "<p>" + esc(p) + "</p>").join("") +
@@ -467,9 +467,9 @@ function render(t) {
   else if (t === "markets") html = pageMarkets();
   else if (t === "ai") html = pageAI();
   else if (t === "earnings") html = pageEarnings();
-  else if (t === "notes") html = pageNotes();
+  else if (t === "articles") html = pageNotes();
   else if (t === "about") html = pageAbout();
-  else if (t.indexOf("note-") === 0) { html = pageNote(t.slice(5)); nav = "notes"; }
+  else if (t.indexOf("article-") === 0) { html = pageNote(t.slice(8)); nav = "articles"; }
   if (html == null) { html = pageHome(); nav = "home"; }
   $("#app").innerHTML = html;
   document.querySelectorAll("#nav a").forEach(a => {
@@ -485,7 +485,7 @@ document.addEventListener("click", ev => {
   const a = ev.target.closest && ev.target.closest('a[href^="#"]');
   if (a) { ev.preventDefault(); go(a.getAttribute("href").slice(1) || "home"); return; }
   const b = ev.target.closest && ev.target.closest("button[data-tag]");
-  if (b) { activeTag = b.dataset.tag; render("notes"); }
+  if (b) { activeTag = b.dataset.tag; render("articles"); }
 });
 window.addEventListener("popstate", () => render(route()));
 window.addEventListener("hashchange", () => render(route()));
