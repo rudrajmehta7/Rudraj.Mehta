@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Short market notes, key levels and dated views.">
+<title>Rudraj Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap">
+<style>
+/* Layout concept: a financial-wire front page. Wordmark and a figures rail on top,
+   short notes on the left, a levels table on the right. No cards, only rules. */
+:root{
+  --bg:#EDF0F3; --surface:#F8F9FB; --ink:#0F1B2D; --muted:#566377; --rule:#C9D1DB;
+  --chip:#DFE5EC; --accent:#2433C7; --accent-ink:#FFFFFF;
+  --up:#0A7447; --down:#BE2F29; --warn:#8A5A00;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C131D; --surface:#131C29; --ink:#E6EBF2; --muted:#93A0B3; --rule:#263446;
+    --chip:#1B2738; --accent:#8393FF; --accent-ink:#0C131D;
+    --up:#4FD08F; --down:#FF7A72; --warn:#E6B450; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C131D; --surface:#131C29; --ink:#E6EBF2; --muted:#93A0B3; --rule:#263446;
+  --chip:#1B2738; --accent:#8393FF; --accent-ink:#0C131D;
+  --up:#4FD08F; --down:#FF7A72; --warn:#E6B450; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.6;
+  padding-block:20px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:1080px;margin:0 auto}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+
+/* Header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 28px;padding-bottom:14px}
+.mark{display:block;text-decoration:none;font-family:var(--display);font-weight:800;font-stretch:70%;font-size:clamp(34px,7vw,58px);line-height:.92;text-transform:uppercase;letter-spacing:-.005em}
+.today{margin-top:8px}
+.nav{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center}
+.nav a{font-family:var(--mono);font-size:13px;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;padding:4px 0;border-bottom:2px solid transparent}
+.nav a:hover{border-bottom-color:var(--rule)}
+.nav a[aria-current="page"]{border-bottom-color:var(--accent)}
+.theme{font:500 12px var(--mono);letter-spacing:.07em;text-transform:uppercase;background:none;color:var(--ink);border:1px solid var(--rule);padding:5px 10px;cursor:pointer}
+.theme:hover{border-color:var(--ink)}
+
+/* Figures rail */
+.rail{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-block:2px solid var(--ink)}
+.rail div{padding:10px 14px 10px 0;display:flex;flex-direction:column;gap:2px;min-width:0}
+.rail .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:19px;font-weight:500}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted)}
+.chg{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px}
+
+.flagbar{margin:18px 0 0;padding:9px 12px;background:var(--chip);font-family:var(--mono);font-size:12px;line-height:1.5}
+
+/* Home layout */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,370px);gap:44px;margin-top:30px}
+@media (max-width:880px){.cols{grid-template-columns:minmax(0,1fr);gap:36px}}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-bottom:1px solid var(--ink);padding-bottom:6px;margin:0 0 4px}
+.sec-h h2{margin:0;font-family:var(--display);font-stretch:75%;font-weight:800;font-size:22px;text-transform:uppercase;letter-spacing:.01em}
+.sec-h a{font-family:var(--mono);font-size:12px;letter-spacing:.07em;text-transform:uppercase}
+
+/* Notes list */
+.nl{list-style:none;margin:0;padding:0}
+.nl li{padding:20px 0;border-bottom:1px solid var(--rule)}
+.nl .meta{display:flex;flex-wrap:wrap;gap:4px 12px}
+.nl h3{margin:6px 0 6px;font-family:var(--display);font-stretch:80%;font-weight:700;font-size:clamp(24px,3.6vw,32px);line-height:1.1;text-wrap:balance}
+.nl h3 a{text-decoration:none}
+.nl h3 a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.nl p{margin:0;color:var(--muted);max-width:62ch}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+
+/* Snapshot */
+.panel{background:var(--surface);border:1px solid var(--rule);padding:6px 16px 14px}
+.panel table{width:100%;border-collapse:collapse}
+.panel th{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:500;padding:14px 0 6px;border-bottom:1px solid var(--rule)}
+.panel th.r,.panel td.r{text-align:right}
+.panel td{padding:9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.panel tr:last-child td{border-bottom:0}
+.panel td.n{padding-right:10px}
+.panel td small{display:block;font-family:var(--body);font-size:13px;line-height:1.35;color:var(--muted);margin-top:1px}
+.panel .lv{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px;white-space:nowrap}
+.stamp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 10px}
+.chip{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;background:var(--chip)}
+.scroll{overflow-x:auto}
+
+/* Views and log tables */
+.page-h{font-family:var(--display);font-stretch:75%;font-weight:800;font-size:clamp(30px,5vw,44px);text-transform:uppercase;line-height:1;margin:34px 0 8px}
+.lede{max-width:62ch;color:var(--muted);margin:0 0 24px}
+.grid-t{width:100%;border-collapse:collapse}
+.grid-t th{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:500;padding:8px 14px 8px 0;border-bottom:2px solid var(--ink)}
+.grid-t td{padding:16px 14px 16px 0;border-bottom:1px solid var(--rule);vertical-align:top;font-size:15.5px;line-height:1.5}
+.pill{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border:1px solid currentColor;white-space:nowrap}
+.pill.bullish,.pill.right{color:var(--up)} .pill.bearish,.pill.wrong{color:var(--down)}
+.pill.neutral{color:var(--muted)} .pill.open{color:var(--accent)} .pill.partly{color:var(--warn)}
+@media (max-width:760px){
+  .grid-t thead{display:none}
+  .grid-t,.grid-t tbody,.grid-t tr,.grid-t td{display:block}
+  .grid-t tr{padding:14px 0;border-bottom:1px solid var(--rule)}
+  .grid-t td{border:0;padding:3px 0}
+  .grid-t td[data-l]::before{content:attr(data-l);display:block;font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+  .grid-t td.first::before{display:none}
+}
+
+/* Notes page filters */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.filters button{font:500 12px var(--mono);letter-spacing:.07em;text-transform:uppercase;background:none;color:var(--ink);border:1px solid var(--rule);padding:5px 11px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Article */
+.art{max-width:68ch;margin:30px 0 0}
+.back{font-family:var(--mono);font-size:12px;letter-spacing:.07em;text-transform:uppercase}
+.art h1{font-family:var(--display);font-stretch:78%;font-weight:800;font-size:clamp(34px,6vw,54px);line-height:1.02;margin:14px 0 12px;text-wrap:balance}
+.art .dek{font-size:20px;line-height:1.45;color:var(--muted);margin:0 0 14px}
+.byline{display:flex;flex-wrap:wrap;gap:4px 14px;padding:10px 0;border-block:1px solid var(--rule);margin-bottom:22px}
+.art h2{font-family:var(--display);font-stretch:80%;font-weight:700;font-size:23px;margin:28px 0 6px}
+.art p,.art li{margin:0 0 14px}
+.art ul{padding-left:22px;margin:0 0 14px}
+.takeaway{border-block:2px solid var(--ink);padding:12px 0 2px;margin:0 0 8px}
+.takeaway p{font-size:19px;line-height:1.5;font-weight:500}
+.sources{margin-top:30px;padding-top:12px;border-top:1px solid var(--rule);font-size:14px}
+.sources ul{list-style:none;padding:0;margin:6px 0 0}
+.sources li{margin:0 0 4px}
+.pn{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-top:34px;padding-top:14px;border-top:2px solid var(--ink)}
+.pn a{text-decoration:none;max-width:46%;min-width:0}
+.pn a:hover b{text-decoration:underline}
+.pn b{display:block;font-family:var(--display);font-stretch:80%;font-size:18px;line-height:1.2}
+.about p{max-width:62ch}
+.about ul{max-width:62ch;padding-left:20px}
+.about li{margin-bottom:8px}
+
+footer{margin-top:56px;padding-top:14px;border-top:2px solid var(--ink);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px}
+footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1.5}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<style>body{margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <a class="mark" id="mark" href="#home">Rudraj Research</a>
+      <div class="label today" id="today"></div>
+    </div>
+    <nav class="nav" id="nav" aria-label="Sections">
+      <a href="#home" data-route="home">Today</a>
+      <a href="#notes" data-route="notes">Notes</a>
+      <a href="#views" data-route="views">Views</a>
+      <a href="#log" data-route="log">Log</a>
+      <a href="#about" data-route="about">About</a>
+      <button class="theme" id="theme" type="button" aria-label="Switch light and dark theme">Theme</button>
+    </nav>
+  </header>
+  <div class="rail" id="rail"></div>
+  <div class="flagbar" id="flag" hidden></div>
+  <main id="app"></main>
+  <footer>
+    <p id="disc"></p>
+    <p class="label" id="copy"></p>
+  </footer>
+</div>
+
+<script>
+/* ======================================================================
+   EDIT HERE. Everything on the site comes from this SITE object.
+   Daily routine: update snapshot.asOf and the levels, then add one note
+   at the top of the notes list. Set sample to false when it is all yours.
+   ====================================================================== */
+const SITE = {
+  name: "Rudraj Research",
+  sample: true,
+  disclaimer: "For educational and informational purposes only. Not investment advice. Views are my own.",
+
+  snapshot: {
+    asOf: "7 Oct 2026 close",
+    rail: ["S&P 500", "US 10-year yield", "Dollar index", "Gold", "Brent crude", "Bitcoin"],
+    groups: [
+      { name: "Equities", rows: [
+        { n: "S&P 500", v: "7,803", c: -0.30, note: "Fell from a record high" } ]},
+      { name: "Rates", rows: [
+        { n: "US 10-year yield", v: "5.28%", note: "Touched 5.36%, highest since 2002" },
+        { n: "US 30-year yield", v: "5.70%", note: "Topped 5.70% intraday" } ]},
+      { name: "FX", rows: [
+        { n: "Dollar index", v: "102.3", c: 0.42, note: "Firmer against six of seven majors" },
+        { n: "USD/JPY", v: "158.04" } ]},
+      { name: "Commodities", rows: [
+        { n: "Gold", v: "$4,112", c: -1.30, note: "Low near $4,072" },
+        { n: "WTI crude", v: "$90", c: -1.40, note: "High near $92.70" },
+        { n: "Brent crude", v: "$102", note: "Held above $102 on Hormuz attacks" } ]},
+      { name: "Crypto", rows: [
+        { n: "Bitcoin", v: "$83,400", c: -2.60, note: "Leveraged longs liquidated" } ]}
+    ]
+  },
+
+  /* Stocks on watch. Leave v and c as null until you add the day's levels. */
+  watchlist: [
+    { t: "NVDA", n: "Nvidia", v: null, c: null, note: "Add the last price and one line on why it is on the list." },
+    { t: "ASML", n: "ASML Holding", v: null, c: null, note: "Example row." },
+    { t: "RELIANCE", n: "Reliance Industries", v: null, c: null, note: "Example row." }
+  ],
+
+  views: [
+    { m: "US 10-year yield", v: "Neutral", h: "1–3 months",
+      r: "At the highest level since 2002, with a strong auction showing buyers exist. Oil, borrowing needs and more Fed hikes keep the upside risk alive.",
+      x: "A sustained close above 5.4% turns this bearish on bonds. A soft inflation print turns it bullish." },
+    { m: "S&P 500", v: "Neutral", h: "1–3 months",
+      r: "The index pulled back from a record on bond jitters. Valuations are sensitive to the 10-year from here.",
+      x: "The 10-year back below 5% with earnings holding up turns this bullish." },
+    { m: "Brent crude", v: "Bullish", h: "1 month",
+      r: "Attacks on vessels near the Strait of Hormuz keep a risk premium in the price, with Brent roughly $12 above WTI.",
+      x: "Shipping normalising or a ceasefire removes the premium." },
+    { m: "Gold", v: "Neutral", h: "3–6 months",
+      r: "Central bank buying supports the long-run case, but a firm dollar and yields above 5% cap the near-term upside.",
+      x: "The dollar index rolling over below 100, or falling yields, turns this bullish." }
+  ],
+
+  log: [
+    { d: "2026-10-07", call: "Neutral on the US 10-year yield after the strong auction", h: "1–3 months", rev: "Review on 7 Jan 2027", s: "Open" },
+    { d: "2026-10-07", call: "Neutral on gold while the dollar and yields firm", h: "3–6 months", rev: "Review on 7 Jan 2027", s: "Open" }
+  ],
+
+  about: [
+    "I am a penultimate-year Accounting and Finance student at the University of Warwick and Head of Equity Research at the Quantitative Investment Group.",
+    "This page is where I write down what moved markets, what I think it means, and what would change my mind."
+  ],
+  how: [
+    "A daily table of the levels that matter: indices, yields, FX, commodities and a stock watchlist.",
+    "Short notes of about two pages, each with a takeaway, the facts, my view and what would change it.",
+    "Views with a horizon and an exit condition, so every call can be checked.",
+    "A decision log. When a horizon ends, I mark the call right, wrong or partly right."
+  ],
+
+  notes: [
+    { id: "ten-year-bonds-set-the-tone", date: "2026-10-07", tags: ["Rates", "Equities", "Macro"],
+      title: "The 10-year at 5.3%: bonds are setting the tone",
+      dek: "Treasury yields hit their highest since 2002 and pulled the S&P 500 off its record. The auction mattered more than any earnings headline.",
+      sources: [
+        { t: "BabyPips: financial forex market recap, 7 Oct 2026", u: "https://www.babypips.com/news/financial-forex-market-recap-2026-10-07" },
+        { t: "Yahoo Finance: stock market today, 7 Oct 2026", u: "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-7-dow-sp-500-nasdaq-080241833.html" } ],
+      body: `
+<div class="takeaway"><p>The 10-year yield touched 5.36% and settled near 5.28% after a strong auction. Equities followed bonds lower, not the other way round.</p></div>
+<h2>What happened</h2>
+<p>On 7 October the US 10-year yield reached 5.36%, its highest since 2002, before easing to about 5.28% once a 10-year auction was well received. The 30-year yield went through 5.70%. The S&amp;P 500 slipped 0.3% to around 7,803, one day after a record.</p>
+<p>The Fed minutes added to the tone. All 19 officials backed September's quarter-point hike, and most expect another by year-end.</p>
+<h2>Why it matters</h2>
+<p>At this level the discount rate, not earnings, drives the day. Higher oil, heavy government borrowing and AI-related corporate issuance all compete for the same buyers, so the auction was the real test. A strong result at the highest yield in over two decades shows demand exists at this price. It does not show that yields have peaked.</p>
+<h2>My view</h2>
+<p>I treat 5.3% as a range to watch, not a ceiling. Equity valuations are most exposed if the 10-year moves decisively above 5.4%, so I stay neutral on both bonds and the index until one of the two conditions below changes.</p>
+<h2>What would change my mind</h2>
+<ul><li>A sustained close above 5.4%, which would suggest the auction demand was a one-off.</li><li>A soft inflation print that lets the front end price fewer hikes.</li></ul>` },
+
+    { id: "hormuz-floor-under-brent", date: "2026-10-07", tags: ["Commodities", "Macro"],
+      title: "Hormuz keeps a floor under Brent",
+      dek: "Brent held above $100 while WTI slipped. The gap between the two says more about shipping risk than about US supply.",
+      sources: [
+        { t: "BabyPips: financial forex market recap, 7 Oct 2026", u: "https://www.babypips.com/news/financial-forex-market-recap-2026-10-07" } ],
+      body: `
+<div class="takeaway"><p>Brent rose above $102 on attacks near the Strait of Hormuz while WTI fell 1.4% to about $90. A roughly $12 gap points to a shipping premium, not US tightness.</p></div>
+<h2>What happened</h2>
+<p>Fresh Iranian attacks on vessels in the Strait of Hormuz pushed Brent above $102. WTI moved the other way, down 1.4% to near $90 after peaking near $92.70, even though US crude stocks fell by 3.19 million barrels.</p>
+<h2>Why it matters</h2>
+<p>Brent prices seaborne crude and WTI prices barrels in the US interior. When Brent runs about $12 ahead, well above the few dollars it usually sits, the market is paying for the risk of disrupted shipping rather than for a shortage at home. That premium can vanish quickly if the route calms, and it can widen if it does not.</p>
+<p>It also feeds the rates story. Higher oil raises inflation worries, which supports the case for further Fed hikes and keeps pressure on yields (see the note on the 10-year).</p>
+<h2>My view</h2>
+<p>I lean bullish on Brent for the next month because the risk premium has a clear cause that is still active. I would not extend that view further out, since a project of this kind rests on headlines rather than on supply and demand.</p>
+<h2>What would change my mind</h2>
+<ul><li>Shipping through the Strait normalising, or a ceasefire holding.</li><li>The Brent-WTI gap closing below $8 without a fall in Brent.</li></ul>` },
+
+    { id: "gold-slips-dollar-yields", date: "2026-10-07", tags: ["Commodities", "FX", "Rates"],
+      title: "Gold slips 1.3% as the dollar and yields firm",
+      dek: "Central banks are still buying, but gold pays no income while Treasuries pay more than 5%.",
+      sources: [
+        { t: "BabyPips: financial forex market recap, 7 Oct 2026", u: "https://www.babypips.com/news/financial-forex-market-recap-2026-10-07" } ],
+      body: `
+<div class="takeaway"><p>Gold fell 1.3% to about $4,112 as the dollar index rose 0.42% to 102.3 and yields climbed. Chinese central bank buying continued, which limits the downside.</p></div>
+<h2>What happened</h2>
+<p>Gold dropped to a morning low near $4,072 before steadying around $4,112. The dollar gained against six of seven major currencies. The yen was the only major to rise, by about 0.05%, with USD/JPY near 158.04.</p>
+<h2>Why it matters</h2>
+<p>Gold competes with Treasuries. With the 10-year between 5.28% and 5.36%, holding a metal that pays nothing has a visible cost, and a stronger dollar makes it dearer for buyers elsewhere. Official-sector buying works the other way, which is why I read this as a pause in a long-run trend and not a break of it.</p>
+<h2>My view</h2>
+<p>Neutral for the next three to six months. The structural case is intact, but the combination of a firm dollar and high yields leaves little room to run in the near term.</p>
+<h2>What would change my mind</h2>
+<ul><li>The dollar index rolling over below 100, or the 10-year falling back through 5%.</li><li>A close below the $4,072 low on rising yields, which would make me more cautious.</li></ul>` }
+  ]
+};
+/* ====================== end of editable block ====================== */
+
+const $ = (s, r) => (r || document).querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmtDate = iso => new Date(iso + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+const words = html => html.replace(/<[^>]*>/g, " ").split(/\s+/).filter(Boolean).length;
+const readMin = n => Math.max(1, Math.round(words(n.body) / 220)) + " min read";
+const notes = SITE.notes.slice().sort((a, b) => b.date.localeCompare(a.date));
+let activeTag = "All";
+
+function chg(c) {
+  if (c == null) return '<span class="chg flat">–</span>';
+  if (c === 0) return '<span class="chg flat">0.00%</span>';
+  const up = c > 0;
+  return '<span class="chg ' + (up ? "up" : "down") + '">' + (up ? "▲ +" : "▼ −") + Math.abs(c).toFixed(2) + "%</span>";
+}
+function findRow(name) {
+  for (const g of SITE.snapshot.groups) for (const r of g.rows) if (r.n === name) return r;
+  return null;
+}
+function renderRail() {
+  $("#rail").innerHTML = SITE.snapshot.rail.map(n => {
+    const r = findRow(n); if (!r) return "";
+    return '<div><span class="label">' + esc(n) + '</span><span class="v">' + esc(r.v) + "</span>" + chg(r.c) + "</div>";
+  }).join("");
+}
+function noteItem(n) {
+  return '<li><div class="meta"><span class="label">' + fmtDate(n.date) + '</span><span class="tag">' + n.tags.map(esc).join(" · ") +
+    '</span><span class="label">' + readMin(n) + '</span></div><h3><a href="#note-' + n.id + '">' + esc(n.title) + "</a></h3><p>" + esc(n.dek) + "</p></li>";
+}
+function snapshotPanel() {
+  const rows = SITE.snapshot.groups.map(g =>
+    '<tr><th colspan="3">' + esc(g.name) + "</th></tr>" +
+    g.rows.map(r => '<tr><td class="n">' + esc(r.n) + (r.note ? "<small>" + esc(r.note) + "</small>" : "") +
+      '</td><td class="r lv">' + esc(r.v) + '</td><td class="r">' + chg(r.c) + "</td></tr>").join("")).join("");
+  return '<div class="stamp"><span class="label">As of ' + esc(SITE.snapshot.asOf) + "</span>" +
+    (SITE.sample ? '<span class="chip">Sample levels</span>' : "") + '</div><div class="panel scroll"><table><tbody>' + rows + "</tbody></table></div>";
+}
+function watchPanel() {
+  const rows = SITE.watchlist.map(w => '<tr><td class="n"><b class="num">' + esc(w.t) + "</b> " + esc(w.n) +
+    (w.note ? "<small>" + esc(w.note) + "</small>" : "") + '</td><td class="r lv">' + (w.v == null ? "–" : esc(w.v)) +
+    '</td><td class="r">' + chg(w.c) + "</td></tr>").join("");
+  return '<div class="panel scroll"><table><tbody><tr><th colspan="3">Stocks on watch' +
+    (SITE.sample ? ' <span class="chip">Example</span>' : "") + "</th></tr>" + rows + "</tbody></table></div>";
+}
+function viewsTable() {
+  return '<div class="scroll"><table class="grid-t"><thead><tr><th>Market</th><th>View</th><th>Horizon</th><th>Why</th><th>What changes my mind</th></tr></thead><tbody>' +
+    SITE.views.map(v => '<tr><td class="first" data-l="Market"><b>' + esc(v.m) + '</b></td><td data-l="View"><span class="pill ' + v.v.toLowerCase() + '">' + esc(v.v) +
+      '</span></td><td data-l="Horizon" class="num">' + esc(v.h) + '</td><td data-l="Why">' + esc(v.r) + '</td><td data-l="What changes my mind">' + esc(v.x) + "</td></tr>").join("") +
+    "</tbody></table></div>";
+}
+
+function pageHome() {
+  const miniViews = SITE.views.map(v => '<span class="pill ' + v.v.toLowerCase() + '" style="margin:0 8px 8px 0">' + esc(v.m) + " · " + esc(v.v) + "</span>").join("");
+  return '<div class="cols"><section><div class="sec-h"><h2>Latest notes</h2><a href="#notes">All notes</a></div><ul class="nl">' +
+    notes.slice(0, 4).map(noteItem).join("") +
+    '</ul><div class="sec-h" style="margin-top:34px"><h2>Current views</h2><a href="#views">Details</a></div><div style="padding-top:14px">' + miniViews + "</div></section>" +
+    '<aside><div class="sec-h" style="margin-bottom:12px"><h2>Levels</h2></div>' + snapshotPanel() +
+    '<div style="margin-top:18px">' + watchPanel() + "</div></aside></div>";
+}
+function pageNotes() {
+  const tags = ["All"].concat(Array.from(new Set(notes.flatMap(n => n.tags))));
+  const list = notes.filter(n => activeTag === "All" || n.tags.indexOf(activeTag) > -1);
+  return '<h1 class="page-h">Notes</h1><p class="lede">Short, dated, sourced. Each one ends with what would change my mind.</p><div class="filters" role="group" aria-label="Filter by topic">' +
+    tags.map(t => '<button type="button" data-tag="' + esc(t) + '" aria-pressed="' + (t === activeTag) + '">' + esc(t) + "</button>").join("") +
+    '</div><ul class="nl">' + list.map(noteItem).join("") + "</ul>";
+}
+function pageNote(id) {
+  const i = notes.findIndex(n => n.id === id); if (i < 0) return null;
+  const n = notes[i], newer = notes[i - 1], older = notes[i + 1];
+  return '<article class="art"><a class="back" href="#notes">← All notes</a><h1>' + esc(n.title) + '</h1><p class="dek">' + esc(n.dek) +
+    '</p><div class="byline"><span class="label">' + fmtDate(n.date) + '</span><span class="tag">' + n.tags.map(esc).join(" · ") + '</span><span class="label">' + readMin(n) +
+    "</span></div>" + n.body +
+    (n.sources && n.sources.length ? '<div class="sources"><span class="label">Sources</span><ul>' + n.sources.map(s => '<li><a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + "</a></li>").join("") + "</ul></div>" : "") +
+    '<div class="pn">' + (newer ? '<a href="#note-' + newer.id + '"><span class="label">Newer</span><b>' + esc(newer.title) + "</b></a>" : "<span></span>") +
+    (older ? '<a href="#note-' + older.id + '" style="text-align:right"><span class="label">Older</span><b>' + esc(older.title) + "</b></a>" : "") + "</div></article>";
+}
+function pageViews() {
+  return '<h1 class="page-h">Views</h1><p class="lede">Each view has a horizon and an exit condition. These are research views, not recommendations.' +
+    (SITE.sample ? ' <span class="chip">Sample views</span>' : "") + "</p>" + viewsTable();
+}
+function pageLog() {
+  return '<h1 class="page-h">Decision log</h1><p class="lede">Every call I publish is recorded here. When the horizon ends I mark it right, wrong or partly right, and say why.' +
+    (SITE.sample ? ' <span class="chip">Example entries</span>' : "") + '</p><div class="scroll"><table class="grid-t"><thead><tr><th>Date</th><th>Call</th><th>Horizon</th><th>Review</th><th>Status</th></tr></thead><tbody>' +
+    SITE.log.map(l => '<tr><td class="first num" data-l="Date">' + fmtDate(l.d) + '</td><td data-l="Call">' + esc(l.call) + '</td><td data-l="Horizon" class="num">' + esc(l.h) +
+      '</td><td data-l="Review">' + esc(l.rev) + '</td><td data-l="Status"><span class="pill ' + l.s.toLowerCase() + '">' + esc(l.s) + "</span></td></tr>").join("") + "</tbody></table></div>";
+}
+function pageAbout() {
+  return '<div class="about"><h1 class="page-h">About</h1>' + SITE.about.map(p => "<p>" + esc(p) + "</p>").join("") +
+    '<div class="sec-h" style="margin-top:28px"><h2>What you will find here</h2></div><ul style="margin-top:14px">' + SITE.how.map(p => "<li>" + esc(p) + "</li>").join("") + "</ul></div>";
+}
+
+function route() { const h = (location.hash || "").slice(1); return h || "home"; }
+function render(t) {
+  let html = null, nav = t;
+  if (t === "home") html = pageHome();
+  else if (t === "notes") html = pageNotes();
+  else if (t === "views") html = pageViews();
+  else if (t === "log") html = pageLog();
+  else if (t === "about") html = pageAbout();
+  else if (t.indexOf("note-") === 0) { html = pageNote(t.slice(5)); nav = "notes"; }
+  if (html == null) { html = pageHome(); nav = "home"; }
+  $("#app").innerHTML = html;
+  document.querySelectorAll("#nav a").forEach(a => {
+    if (a.dataset.route === nav) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+  });
+}
+function go(t) {
+  try { history.pushState(null, "", "#" + t); } catch (e) {}
+  render(t); window.scrollTo(0, 0);
+}
+
+document.addEventListener("click", ev => {
+  const a = ev.target.closest && ev.target.closest('a[href^="#"]');
+  if (a) { ev.preventDefault(); go(a.getAttribute("href").slice(1) || "home"); return; }
+  const b = ev.target.closest && ev.target.closest("button[data-tag]");
+  if (b) { activeTag = b.dataset.tag; render("notes"); }
+});
+window.addEventListener("popstate", () => render(route()));
+window.addEventListener("hashchange", () => render(route()));
+
+$("#theme").addEventListener("click", () => {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const next = dark ? "light" : "dark";
+  root.dataset.theme = next;
+  try { localStorage.setItem("rr-theme", next); } catch (e) {}
+});
+try { const t = localStorage.getItem("rr-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
+
+$("#mark").textContent = SITE.name;
+$("#today").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+$("#disc").textContent = SITE.disclaimer;
+$("#copy").textContent = "© " + new Date().getFullYear() + " " + SITE.name;
+if (SITE.sample) {
+  const f = $("#flag"); f.hidden = false;
+  f.textContent = "Sample content. Levels are from " + SITE.snapshot.asOf + " and the notes are templates. Edit the SITE block in index.html, then set sample to false.";
+}
+renderRail();
+render(route());
+</script>
+
+</body>
+</html>
