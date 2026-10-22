@@ -155,6 +155,13 @@ a{color:inherit}
 .stats dd{margin:2px 0 0;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px}
 .cal{padding:12px 0;border-bottom:1px solid var(--rule);max-width:70ch}
 .cal p{margin:4px 0 0;font-size:15.5px}
+.heads{margin-top:28px}
+.heads ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 44px}
+.heads li{display:grid;align-content:start;gap:3px;padding:14px 0;border-bottom:1px solid var(--rule);min-width:0}
+.heads p{margin:0;font-size:16px;line-height:1.5}
+.heads p a{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.heads .hnote{font-size:11px;margin:12px 0 0;text-transform:none;letter-spacing:0;line-height:1.5}
+@media (max-width:760px){.heads ul{grid-template-columns:minmax(0,1fr)}}
 footer{margin-top:56px;padding-top:14px;border-top:2px solid var(--ink);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px}
 footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1.5}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
@@ -226,6 +233,24 @@ const SITE = {
       { t: "Yahoo Finance: gold price today, 21 Oct 2026", u: "https://finance.yahoo.com/personal-finance/investing/article/gold-price-today-wednesday-october-21-2026-gold-prices-down-52-yoy-one-week-ahead-of-the-feds-rate-decision-105025200.html" },
       { t: "Yahoo Finance UK: price of oil, 21 Oct 2026", u: "https://uk.finance.yahoo.com/news/current-price-oil-october-21-120010312.html" },
       { t: "CNT Trading: daily market, 21 Oct 2026", u: "https://cnttrading.substack.com/p/daily-market-2026-10-21" } ]
+  },
+
+  /* Headlines for the Today page. Add new items at the top. tag: short label. */
+  headlines: {
+    asOf: "Thu 22 Oct 2026, morning",
+    note: "Summarised from Yahoo Finance reports, including Reuters copy carried on Yahoo. The Financial Times is paywalled, so its articles are not summarised here.",
+    items: [
+      { tag: "US stocks", t: "Wall Street fell at the start of Thursday's session: the S&P 500 was down 0.87%, the Nasdaq 1.47% and the Dow 0.39% in Yahoo's snapshot, with Nasdaq-100 futures down about 1.7%.", u: "https://finance.yahoo.com/markets/article/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html", src: "Yahoo Finance" },
+      { tag: "Chips", t: "Semiconductors led the drop. The chip ETF was down about 4% premarket, Lam Research fell about 9% after its guidance, Applied Materials and KLA about 6%, AMD, Intel and Sandisk 4% to 5%, and Nvidia about 2%.", u: "https://finance.yahoo.com/markets/article/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html", src: "Yahoo Finance" },
+      { tag: "AI spending", t: "Meta's plan for a 2-for-1 split with a non-voting Class C share revived worries about how the AI build-out is funded, erasing the optimism from Wednesday's earnings.", u: "https://finance.yahoo.com/markets/world-indices/articles/asian-markets-dip-investors-weigh-021515158.html", src: "Reuters via Yahoo" },
+      { tag: "Oil", t: "Brent topped $111 a barrel, its highest since May, after a New York Times report that the US and Israel have drawn up plans for renewed Iran strikes after the 3 Nov midterms, and Saudi reports of attacks on Dammam airport and an Aramco field.", u: "https://finance.yahoo.com/markets/article/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html", src: "Yahoo Finance" },
+      { tag: "Asia", t: "MSCI Asia-Pacific ex-Japan fell 1.8% to a near three-month low. The Nikkei fell about 2%, South Korea more than 4%, the CSI300 2% (near a technical bear market) and the Hang Seng more than 3%.", u: "https://finance.yahoo.com/markets/world-indices/articles/asian-markets-dip-investors-weigh-021515158.html", src: "Reuters via Yahoo" },
+      { tag: "Rates", t: "UK CPI came in at 3.5% for September, an upside surprise, with core at 2.8%, feeding the idea that tight policy lasts longer. The US 10-year yield was around 5.03% in Yahoo's snapshot. The Fed decides on 28 Oct.", u: "https://sg.finance.yahoo.com/news/us-stock-market-today-p-121844169.html", src: "Yahoo Finance" },
+      { tag: "Gold, crypto", t: "Gold fell about 1.4% to roughly $4,092, Bitcoin about 2.5% to roughly $81,700, and the VIX rose to 18.10.", u: "https://finance.yahoo.com/markets/article/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html", src: "Yahoo Finance" },
+      { tag: "Tesla", t: "Tesla fell despite beating on profit, as investors weighed lower 2026 capex against higher spending in 2027 and 2028 on Optimus, Cybercab and Terafab.", u: "https://finance.yahoo.com/markets/article/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html", src: "Yahoo Finance" },
+      { tag: "IBM", t: "IBM was volatile after beating on earnings and raising its free cash flow outlook while keeping revenue guidance at 4% to 5%. About a quarter of its 9% software growth came from delayed deals.", u: "https://finance.yahoo.com/markets/article/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html", src: "Yahoo Finance" },
+      { tag: "Earnings", t: "Capital One earned $6.69 a share against $5.45 expected, Danaher $2.11 against $1.92 and Thermo Fisher $6.68 against $6.40 (Zacks consensus).", u: "https://finance.yahoo.com/markets/stocks/articles/company-news-oct-22-2026-094700101.html", src: "Yahoo Finance" }
+    ]
   },
 
   /* AI and mega-cap tech. p = price, c = day % move, ah = after-hours move. */
@@ -419,8 +444,14 @@ function earnBlock(e, compact) {
     "</article>";
 }
 
+function headlinesBlock() {
+  const h = SITE.headlines; if (!h || !h.items.length) return "";
+  return '<section class="heads"><div class="sec-h"><h2>Headlines</h2><span class="label">' + esc(h.asOf) + '</span></div><ul>' +
+    h.items.map(i => '<li><span class="tag">' + esc(i.tag) + '</span><p>' + esc(i.t) + ' <a href="' + esc(i.u) + '" target="_blank" rel="noopener">' + esc(i.src) + ' ↗</a></p></li>').join("") +
+    '</ul><p class="label hnote">' + esc(h.note) + "</p></section>";
+}
 function pageHome() {
-  return '<div class="cols"><section><div class="sec-h"><h2>Latest articles</h2><a href="#articles">All articles</a></div><ul class="nl">' +
+  return headlinesBlock() + '<div class="cols"><section><div class="sec-h"><h2>Latest articles</h2><a href="#articles">All articles</a></div><ul class="nl">' +
     notes.slice(0, 3).map(noteItem).join("") +
     '</ul><div class="sec-h" style="margin-top:34px"><h2>Earnings so far</h2><a href="#earnings">Key findings</a></div><div class="earn-list">' +
     SITE.earnings.slice(0, 4).map(e => earnBlock(e, true)).join("") + "</div></section>" +
