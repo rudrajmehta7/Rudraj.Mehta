@@ -1,0 +1,14 @@
+{
+  "name": "rudraj-mehta",
+  "version": "1.0.0",
+  "description": "Apex: Daily Market Spread",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site, no build needed'",
+    "test": "echo 'No tests configured'"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.3.1"
+  }
+}
