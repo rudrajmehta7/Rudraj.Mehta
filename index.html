@@ -87,6 +87,10 @@ a{color:inherit}
 .stamp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 10px}
 .chip{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;background:var(--chip)}
 .scroll{overflow-x:auto}
+.mt{min-width:520px}
+.mt td.lv,.mt th.r{padding-left:14px}
+.read{max-width:66ch;padding-left:20px;margin:14px 0 0}
+.read li{margin-bottom:10px}
 
 /* Views and log tables */
 .page-h{font-family:var(--display);font-stretch:75%;font-weight:800;font-size:clamp(30px,5vw,44px);text-transform:uppercase;line-height:1;margin:34px 0 8px}
@@ -161,6 +165,8 @@ a{color:inherit}
 .mv td{padding:7px 12px 7px 0;border-bottom:1px solid var(--rule);font-size:16px}
 .mv .r{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;padding-right:0}
 .mv th.r{text-align:right;padding-right:0}
+.pgrid.one{grid-template-columns:minmax(0,1fr)}
+.pgrid>*{min-width:0}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:22px;align-items:start}
 .about .links{margin:6px 0 0}
 .about .links a{font-family:var(--mono);font-size:13px;letter-spacing:.04em}
@@ -184,6 +190,7 @@ footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1
       <a href="#markets" data-route="markets">Markets</a>
       <a href="#ai" data-route="ai">AI stocks</a>
       <a href="#earnings" data-route="earnings">Earnings</a>
+      <a href="#macro" data-route="macro">Macro</a>
       <a href="#about" data-route="about">About</a>
       <button class="theme" id="theme" type="button" aria-label="Switch light and dark theme">Theme</button>
     </nav>
@@ -1379,10 +1386,53 @@ const SITE = {
   aboutLinks: [
     { t: "LinkedIn: linkedin.com/in/rudraj-mehta7", u: "https://www.linkedin.com/in/rudraj-mehta7" }
   ],
+  macro: {
+    asOf: "23 Oct 2026",
+    note: "Latest official prints (mostly September CPI), with the August reading beside each so you can see the direction. Core means different things by country, so the note under each row says which measure it is. A dash means I have no verified figure.",
+    cpi: [
+      { n: "United States", h: "3.7", p: "3.4", c: "2.6", cp: "2.4", note: "CPI, Sep. Core excludes food and energy. Gasoline +9.1% m/m." },
+      { n: "Euro area", h: "3.8", p: "3.2", c: "2.5", cp: "2.4", note: "HICP, Sep final. Core excludes energy, food, alcohol and tobacco. Energy +18.9% y/y." },
+      { n: "Germany", h: "3.3", p: "2.9", c: "–", cp: "–", note: "HICP, Sep." },
+      { n: "France", h: "3.4", p: "2.6", c: "–", cp: "–", note: "HICP, Sep." },
+      { n: "Italy", h: "4.2", p: "3.2", c: "–", cp: "–", note: "HICP, Sep." },
+      { n: "Spain", h: "5.0", p: "4.6", c: "–", cp: "–", note: "HICP, Sep." },
+      { n: "United Kingdom", h: "3.5", p: "3.1", c: "2.8", cp: "2.6", note: "CPI, Sep. Core excludes energy, food, alcohol and tobacco. Services 3.7%." },
+      { n: "Japan", h: "–", p: "–", c: "2.1", cp: "1.7", note: "Core excludes fresh food. Excluding fresh food and energy: 2.4% (Aug 1.9%). First time above the BoJ's 2% target in nine months." },
+      { n: "China", h: "0.9", p: "0.8", c: "1.0", cp: "–", note: "CPI, Sep. Core excludes food and energy." },
+      { n: "India", h: "5.54", p: "4.83", c: "–", cp: "–", note: "CPI, Sep, a 23-month high. Food inflation 7.74% (Aug 5.97%)." }
+    ],
+    rates: [
+      { n: "United States", bank: "Fed", rate: "3.75–4.00%", next: "28 Oct", u: "4.2%", ul: "Sep", note: "Payrolls +29k in September against +90k expected." },
+      { n: "Euro area", bank: "ECB", rate: "2.50%", next: "29 Oct", u: "6.4%", ul: "Aug", note: "Deposit facility rate." },
+      { n: "United Kingdom", bank: "BoE", rate: "3.75%", next: "5 Nov", u: "4.7%", ul: "3m to Aug", note: "Markets expect a quarter-point hike to 4%." },
+      { n: "Japan", bank: "BoJ", rate: "1.25%", next: "30 Oct", u: "–", ul: "", note: "Highest policy rate in 31 years. No change expected on 30 Oct." },
+      { n: "India", bank: "RBI", rate: "5.50%", next: "–", u: "–", ul: "", note: "Repo rate, after a 25 basis point rise." },
+      { n: "China", bank: "PBoC", rate: "–", next: "–", u: "–", ul: "", note: "" }
+    ],
+    read: [
+      "Every economy in the table has a higher headline rate than a month earlier, and energy is the common driver: US gasoline rose 9.1% in the month and euro-area energy prices are up 18.9% on a year ago.",
+      "Core inflation is much lower than headline in the US (2.6%), euro area (2.5%) and UK (2.8%). That gap is the case policymakers make for looking through the oil spike, and the risk is that it passes into core.",
+      "Central banks are leaning towards tightening: the Fed hiked in September, the RBI has raised rates, and markets expect the BoE to hike on 5 November. The Fed, ECB and BoJ all decide in the next week."
+    ],
+    sources: [
+      { t: "TD Economics: US CPI, September 2026", u: "https://economics.td.com/us-cpi" },
+      { t: "Eurostat flash and final HICP, 16 Oct (via Poder360)", u: "https://static.poder360.com.br/uploads/2026/10/integra-eurostat-inflacao-16out2026.pdf" },
+      { t: "BabyPips: UK inflation, September 2026", u: "https://www.babypips.com/news/headline-uk-inflation-september-2026-cpi-fuel-prices-boe-rate-hike" },
+      { t: "IndexBox: Japan core inflation, September", u: "https://www.indexbox.io/blog/japan-core-inflation-tops-bojs-2-target-in-september-bolstering-case-for-rate-hike/" },
+      { t: "National Bureau of Statistics of China: CPI, September 2026", u: "https://www.stats.gov.cn/english/PressRelease/202610/t20261015_1965500.html" },
+      { t: "Angel One: India retail inflation, September 2026", u: "https://www.angelone.in/news/economy/india-s-retail-inflation-hits-23-month-high-of-5-54-in-september-2026" },
+      { t: "InvestingLive: US September payrolls", u: "https://investinglive.com/news/us-september-non-farm-payrolls-29k-vs-90k-expected/" },
+      { t: "Political.org: Fed hiking and the October meeting", u: "https://political.org/2026/10/12/fed-officials-hope-to-skip-an-october-rate-hike-but-this-weeks-inflation-report-could-upend-that-plan/" },
+      { t: "Admiral Markets: ECB October 2026 meeting", u: "https://admiralmarkets.com/analytics/traders-blog/ecb-meeting-october-2026" },
+      { t: "ITV News: UK unemployment, 20 Oct 2026", u: "https://www.itv.com/news/2026-10-20/uk-unemployment-falls-to-lowest-in-a-year-but-vacancies-slide-further" }
+    ]
+  },
+
   how: [
     "Markets: indices, yields, gold, oil and crypto, with the source and date on every number.",
     "AI stocks: the mega-cap and chip names that drive the index, with day and after-hours moves.",
     "Earnings: key findings from each report, and the week's calendar.",
+    "Macro: inflation, policy rates and unemployment for the US, euro area, UK, Japan, China and India.",
     "Articles: short pieces of about two pages with a takeaway, the facts, my view and what would change it."
   ],
 
@@ -1842,6 +1892,31 @@ function pageHome() {
 function pageMarkets() {
   return '<h1 class="page-h">Markets</h1><p class="lede">' + esc(SITE.snapshot.caveat) + '</p><div class="stamp"><span class="label">As of ' + esc(SITE.snapshot.asOf) + '</span></div><div class="pgrid">' + SITE.snapshot.groups.map(groupPanel).join("") + "</div>" + srcList(SITE.snapshot.sources);
 }
+function dpp(a, b) {
+  const x = parseFloat(a), y = parseFloat(b);
+  if (isNaN(x) || isNaN(y)) return "–";
+  const d = Math.round((x - y) * 100) / 100;
+  if (d === 0) return "0 pt";
+  return (d > 0 ? "+" : "−") + String(Math.abs(d)) + " pt";
+}
+function pct(v) { return v === "–" ? "–" : v + "%"; }
+function macroCpiPanel() {
+  const M = SITE.macro;
+  return '<div class="panel"><div class="scroll"><table class="mt"><thead><tr><th>Inflation, y/y</th><th class="r">Headline</th><th class="r">Aug</th><th class="r">Change</th><th class="r">Core</th></tr></thead><tbody>' +
+    M.cpi.map(r => '<tr><td class="n">' + esc(r.n) + "<small>" + esc(r.note) + '</small></td><td class="r lv">' + esc(pct(r.h)) + '</td><td class="r lv">' + esc(pct(r.p)) + '</td><td class="r lv">' + esc(dpp(r.h, r.p)) + '</td><td class="r lv">' + esc(pct(r.c)) + (r.cp !== "–" ? "<small>Aug " + esc(r.cp) + "%</small>" : "") + "</td></tr>").join("") +
+    "</tbody></table></div></div>";
+}
+function macroRatesPanel() {
+  const M = SITE.macro;
+  return '<div class="panel"><div class="scroll"><table class="mt"><thead><tr><th>Rates and jobs</th><th class="r">Policy rate</th><th class="r">Next decision</th><th class="r">Unemployment</th></tr></thead><tbody>' +
+    M.rates.map(r => '<tr><td class="n">' + esc(r.n) + " · " + esc(r.bank) + (r.note ? "<small>" + esc(r.note) + "</small>" : "") + '</td><td class="r lv">' + esc(r.rate) + '</td><td class="r lv">' + esc(r.next) + '</td><td class="r lv">' + esc(r.u) + (r.ul ? "<small>" + esc(r.ul) + "</small>" : "") + "</td></tr>").join("") +
+    "</tbody></table></div></div>";
+}
+function pageMacro() {
+  const M = SITE.macro;
+  return '<h1 class="page-h">Macro</h1><p class="lede">' + esc(M.note) + '</p><div class="stamp"><span class="label">As of ' + esc(M.asOf) + '</span></div><div class="pgrid one">' + macroCpiPanel() + macroRatesPanel() + "</div>" +
+    '<div class="sec-h" style="margin-top:30px"><h2>What the data says</h2></div><ul class="read">' + M.read.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul>" + srcList(M.sources);
+}
 function pageAI() {
   return '<h1 class="page-h">AI stocks</h1><p class="lede">' + esc(SITE.ai.summary) + '</p><div class="stamp"><span class="label">As of ' + esc(SITE.ai.asOf) + '</span></div><div class="pgrid">' + SITE.ai.groups.map(aiGroupPanel).join("") + "</div>" + srcList(SITE.ai.sources);
 }
@@ -1880,6 +1955,7 @@ function render(t) {
   else if (t === "markets") html = pageMarkets();
   else if (t === "ai") html = pageAI();
   else if (t === "earnings") html = pageEarnings();
+  else if (t === "macro") html = pageMacro();
   else if (t === "articles") html = pageNotes();
   else if (t === "about") html = pageAbout();
   else if (t.indexOf("article-") === 0) { html = pageNote(t.slice(8)); nav = "articles"; }
