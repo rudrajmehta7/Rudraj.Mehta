@@ -87,7 +87,25 @@ a{color:inherit}
 .stamp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 10px}
 .chip{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;background:var(--chip)}
 .scroll{overflow-x:auto}
+.sg-head{margin:0 0 6px}
+.sg-big{font-family:var(--display);font-stretch:75%;font-weight:800;font-size:clamp(24px,4vw,34px);text-transform:uppercase;line-height:1}
+.sg-big b{color:var(--down)}
+.sg-bar{display:flex;gap:4px;margin:12px 0 8px;max-width:520px}
+.sg-bar i{flex:1;height:14px;display:block}
+.sg-stress{background:var(--down)} .sg-watch{background:var(--warn)} .sg-calm{background:var(--up)}
+.sg-key{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.sg-k{display:inline-block;width:10px;height:10px;margin-left:8px}
+.sg-k:first-child{margin-left:0}
+.sg-cell{width:62%;white-space:nowrap}
+.sg-track{position:relative;display:inline-block;vertical-align:middle;width:calc(100% - 52px);height:12px;background:var(--chip);margin-right:8px}
+.sg-fill{height:100%}
+.sg-line{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.sg-note{font-size:13px;color:var(--muted);margin:8px 0 2px}
 .mt{min-width:520px}
+.mt.st{min-width:0}
+.st td.n{padding-right:12px}
+.st td.r{white-space:nowrap}
+.sg-cell{min-width:150px}
 .mt td.lv,.mt th.r{padding-left:14px}
 .read{max-width:66ch;padding-left:20px;margin:14px 0 0}
 .read li{margin-bottom:10px}
@@ -191,6 +209,7 @@ footer p{margin:0;font-size:13px;color:var(--muted);max-width:60ch;line-height:1
       <a href="#ai" data-route="ai">AI stocks</a>
       <a href="#earnings" data-route="earnings">Earnings</a>
       <a href="#macro" data-route="macro">Macro</a>
+      <a href="#stress" data-route="stress">AI stress</a>
       <a href="#about" data-route="about">About</a>
       <button class="theme" id="theme" type="button" aria-label="Switch light and dark theme">Theme</button>
     </nav>
@@ -1429,6 +1448,54 @@ const SITE = {
     ]
   },
 
+  stress: {
+    asOf: "11 Nov 2026 (market data to 6–10 Nov)",
+    lede: "Big Tech is spending more on AI than it earns, and the gap is being filled with debt. This page tracks seven public warning signs. Each has a threshold I set and show, so you can see why it is rated Calm, Watch or Stress and disagree with the line if you want to.",
+    verdict: "Six of the seven signs are at Stress, but they are concentrated at the leveraged edge: Amazon, Alphabet, Meta, CoreWeave and SoftBank. Microsoft is the counter-example, with capex at 68% of operating cash flow and positive free cash flow.",
+    capex: [
+      { n: "Microsoft", v: 68, fcf: "FCF +$18.6bn" },
+      { n: "Meta", v: 106, fcf: "FCF −$2.1bn" },
+      { n: "Alphabet", v: 121, fcf: "FCF −$9.1bn" },
+      { n: "Amazon", v: 182, fcf: "Capex $77.3bn vs operating cash flow $42.4bn" }
+    ],
+    groups: [
+      { name: "Cash: can they pay for it?", rows: [
+        { n: "Worst capex-to-cash ratio of the big four", v: 182, disp: "182%", lo: 80, hi: 100, rule: "Capex as % of operating cash flow, Q3. Above 100% means spending more than the business generates.", note: "Amazon 182%, Alphabet 121%, Meta 106%, Microsoft 68%." },
+        { n: "Big four spending more than they generate", v: 3, disp: "3 of 4", lo: 1, hi: 3, rule: "Count of Amazon, Alphabet, Meta and Microsoft with Q3 capex above operating cash flow.", note: "Combined 2026 capex plans are above $740bn." }
+      ] },
+      { name: "Credit: what do lenders charge?", rows: [
+        { n: "Hyperscaler bond spreads, widening this year", v: 60, disp: "+60 bp", lo: 25, hi: 50, rule: "Change in option-adjusted spread since 1 January, in basis points.", note: "About 156 bp now against 96 bp at the start of the year (Citi, via 9fin). The group has sold about $284bn of bonds this year." },
+        { n: "CoreWeave 2032 bond yield", v: 16, disp: "16%+", lo: 8, hi: 12, rule: "Yield to maturity, per cent.", note: "6 Nov. The same issue yielded about 15% in mid-October." },
+        { n: "CoreWeave five-year CDS", v: 1155, disp: "≈1,155 bp", lo: 300, hi: 700, rule: "Cost of insuring its debt against default, basis points.", note: "Peaked above 1,289 bp on 5 Nov, then eased about 8% on 6 Nov." },
+        { n: "SoftBank five-year CDS", v: 466, disp: "466 bp", lo: 200, hi: 350, rule: "Cost of insuring its debt against default, basis points.", note: "6 Nov: the widest since October 2022. SoftBank shares fell 10.8% that day." }
+      ] },
+      { name: "Leverage: how much room is left?", rows: [
+        { n: "SoftBank loan-to-value", v: 15.9, disp: "15.9%", lo: 15, hi: 20, rule: "Net debt as % of asset value. SoftBank’s own ceiling is 25%.", note: "Reported on 10 Nov. Analysts had guessed 18–22% beforehand. SoftBank’s net asset value was ¥59.8tn at end-September and ¥44.7tn after the share-price falls since. If the 15.9% is struck on the higher figure, the same debt against ¥44.7tn would be roughly 21% (my arithmetic, indicative only)." }
+      ] }
+    ],
+    signals: [
+      "Alphabet fell 12.6% on 29 October after its results, with free cash flow turning negative in the quarter. TechCrunch called it Alphabet’s worst day on record.",
+      "Alphabet, Amazon and Meta had not bought back a share in 2026 as of the Yahoo Finance report, and Big Tech buybacks were down about 90%.",
+      "OpenAI’s IPO has been delayed to next year, and SB Energy’s planned $50bn IPO risks being put on hold, according to the FT.",
+      "SoftBank booked a ¥770bn net loss for July to September, including about ¥600bn of losses tied to power equipment for US data centres.",
+      "The counter-case: these are very large, profitable companies, and spread widening of 60 bp on high-grade credit is a long way from a funding crisis. Stress here means the cost of funding is rising, not that anyone is about to default."
+    ],
+    method: [
+      "Each sign is rated by a simple rule: below the Watch line is Calm, at or above Watch is Watch, at or above the Stress line is Stress. The lines are my judgement, not an industry standard.",
+      "I do not combine them into a single index number, because the weights would be invented. The headline count is just how many signs are at each level.",
+      "Figures come from the sources below, which in several cases are news reports of company filings and market data rather than the filings themselves. Check the originals before quoting any number."
+    ],
+    sources: [
+      { t: "TechCrunch: Cracks are emerging in the AI spending boom, 30 Oct", u: "https://techcrunch.com/2026/10/30/cracks-are-emerging-in-the-ai-spending-boom/" },
+      { t: "Ruslan Averin: Big Tech Q3 2026 capex and free cash flow", u: "https://averin.com/en/journal/ruslan-averin-big-tech-q3-2026-earnings-ai-capex-stress-test-microsoft-alphabet-meta-amazon-apple" },
+      { t: "9fin: Big tech borrows to bridge the AI spending gap, Q3 review", u: "https://www.9fin.com/insights/big-tech-borrows-ai-spending-capex-cash-flow-q3-earnings" },
+      { t: "Yahoo Finance: CoreWeave bonds now yield more than 16%, 7 Nov", u: "https://finance.yahoo.com/markets/stocks/articles/coreweave-bonds-now-yield-more-153753330.html" },
+      { t: "Yahoo Finance: SoftBank credit risk hits four-year high, 6 Nov", u: "https://finance.yahoo.com/markets/stocks/articles/softbank-group-stocks-plunge-10-190918729.html" },
+      { t: "BigGo Finance: SoftBank Q2 FY2026 results, 10 Nov (secondary report, contains apparent unit errors)", u: "https://finance.biggo.com/news/JP_9984.T_2026-11-10" },
+      { t: "Yahoo Finance: Alphabet, Amazon and Meta haven’t bought back a share in 2026", u: "https://finance.yahoo.com/markets/stocks/articles/alphabet-amazon-meta-haven-t-061248991.html" }
+    ]
+  },
+
   how: [
     "Markets: indices, yields, gold, oil and crypto, with the source and date on every number.",
     "AI stocks: the mega-cap and chip names that drive the index, with day and after-hours moves.",
@@ -2028,6 +2095,32 @@ function pageMacro() {
   return '<h1 class="page-h">Macro</h1><p class="lede">' + esc(M.note) + '</p><div class="stamp"><span class="label">As of ' + esc(M.asOf) + '</span></div><div class="pgrid one">' + macroCpiPanel() + macroRatesPanel() + "</div>" +
     '<div class="sec-h" style="margin-top:30px"><h2>What the data says</h2></div><ul class="read">' + M.read.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul>" + srcList(M.sources);
 }
+function stressLevel(r) { return r.v >= r.hi ? "stress" : r.v >= r.lo ? "watch" : "calm"; }
+function stressLabel(l) { return l === "stress" ? "Stress" : l === "watch" ? "Watch" : "Calm"; }
+function stressRows() { const a = []; SITE.stress.groups.forEach(g => g.rows.forEach(r => a.push(r))); return a; }
+function stressHead() {
+  const rows = stressRows(), n = { stress: 0, watch: 0, calm: 0 };
+  rows.forEach(r => n[stressLevel(r)]++);
+  return '<div class="sg-head"><div class="sg-big"><b>' + n.stress + "</b> of " + rows.length + ' signs at Stress</div><div class="sg-bar" role="img" aria-label="' + n.stress + " at Stress, " + n.watch + " at Watch, " + n.calm + ' at Calm">' +
+    rows.map(r => '<i class="sg-' + stressLevel(r) + '" title="' + esc(r.n) + '"></i>').join("") + '</div><div class="sg-key"><span class="sg-k sg-stress"></span>Stress ' + n.stress + '<span class="sg-k sg-watch"></span>Watch ' + n.watch + '<span class="sg-k sg-calm"></span>Calm ' + n.calm + "</div></div>";
+}
+function stressCapex() {
+  const S = SITE.stress;
+  return '<div class="panel"><div class="scroll"><table class="mt st"><thead><tr><th>Capex as % of operating cash flow, Q3</th><th></th></tr></thead><tbody>' +
+    S.capex.map(c => '<tr><td class="n">' + esc(c.n) + "<small>" + esc(c.fcf) + '</small></td><td class="sg-cell"><div class="sg-track"><div class="sg-fill sg-' + (c.v >= 100 ? "stress" : c.v >= 80 ? "watch" : "calm") + '" style="width:' + Math.min(100, c.v / 2) + '%"></div><div class="sg-line"></div></div><span class="lv">' + c.v + "%</span></td></tr>").join("") +
+    '</tbody></table></div><p class="sg-note">The vertical line marks 100%: above it, a company is spending more than its operations bring in.</p></div>';
+}
+function stressGroup(g) {
+  return '<div class="panel"><div class="scroll"><table class="mt st"><thead><tr><th>' + esc(g.name) + '</th><th class="r">Reading</th><th class="r">Rating</th></tr></thead><tbody>' +
+    g.rows.map(r => { const l = stressLevel(r); return '<tr><td class="n">' + esc(r.n) + "<small>" + esc(r.rule) + " Watch from " + r.lo + ", Stress from " + r.hi + ".</small><small>" + esc(r.note) + '</small></td><td class="r lv">' + esc(r.disp) + '</td><td class="r"><span class="pill ' + (l === "stress" ? "bearish" : l === "watch" ? "partly" : "bullish") + '">' + stressLabel(l) + "</span></td></tr>"; }).join("") +
+    "</tbody></table></div></div>";
+}
+function pageStress() {
+  const S = SITE.stress;
+  return '<h1 class="page-h">AI funding stress</h1><p class="lede">' + esc(S.lede) + '</p><div class="stamp"><span class="label">As of ' + esc(S.asOf) + "</span></div>" + stressHead() + '<p class="lede" style="margin-top:18px">' + esc(S.verdict) + '</p><div class="pgrid one">' + stressCapex() + S.groups.map(stressGroup).join("") + "</div>" +
+    '<div class="sec-h" style="margin-top:30px"><h2>Other signals, not scored</h2></div><ul class="read">' + S.signals.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul>" +
+    '<div class="sec-h" style="margin-top:30px"><h2>How this is built</h2></div><ul class="read">' + S.method.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul>" + srcList(S.sources);
+}
 function pageAI() {
   return '<h1 class="page-h">AI stocks</h1><p class="lede">' + esc(SITE.ai.summary) + '</p><div class="stamp"><span class="label">As of ' + esc(SITE.ai.asOf) + '</span></div><div class="pgrid">' + SITE.ai.groups.map(aiGroupPanel).join("") + "</div>" + srcList(SITE.ai.sources);
 }
@@ -2067,6 +2160,7 @@ function render(t) {
   else if (t === "ai") html = pageAI();
   else if (t === "earnings") html = pageEarnings();
   else if (t === "macro") html = pageMacro();
+  else if (t === "stress") html = pageStress();
   else if (t === "articles") html = pageNotes();
   else if (t === "about") html = pageAbout();
   else if (t.indexOf("article-") === 0) { html = pageNote(t.slice(8)); nav = "articles"; }
